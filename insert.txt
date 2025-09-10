@@ -13,3 +13,18 @@ INSERT INTO policy (uri, name, owner, description, policy_url, auth, valid_from,
 INSERT INTO contacts (type, email, policy_uri) VALUES ('standard', 'grid.support@nikhef.nl', 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl');
 INSERT INTO contacts (type, email, policy_uri) VALUES ('security', 'vo-xenon-admins@biggrid.nl', 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl');
 INSERT INTO augment_policy_uris(uri, augment_uri) VALUES ('https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl', 'https://wise-community.org/wise-baseline-aup/v1/');
+
+
+
+CREATE TABLE IF NOT EXISTS policy_entries(
+    uri CHAR(36) PRIMARY KEY,
+    name VARCHAR(256),
+    informational_url VARCHAR(256),
+    owner VARCHAR(256)
+ );
+
+INSERT INTO policy_entries(uri,name, informational_url, owner)
+VALUES
+('8eaa6f4e-bf42-4cb4-8048-e26864c7ec58','AARC documentation example','http://127.0.0.1:5000/getPolicy/8eaa6f4e-bf42-4cb4-8048-e26864c7ec58', 'Owner is later to be decided'),
+('4a6d33b3-34c0-4d39-9c87-f39d6f932a6b', 'AARC documentation example2', 'http://127.0.0.1:5000/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b','Owner is later to be decided')
+;
