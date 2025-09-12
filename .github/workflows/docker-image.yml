@@ -74,7 +74,7 @@ jobs:
       # Optional: Run container with secrets for testing
       - name: Run app container connected to network
         run: |
-          docker run --rm --network test-net \
+          timeout 10s docker run --rm --network test-net \
             -e DB_HOST=mysql \
             -e DB_USER=testuser \
             -e DB_PASSWORD=testpass \
