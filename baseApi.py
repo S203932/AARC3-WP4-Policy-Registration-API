@@ -1,16 +1,21 @@
 from flask import Flask, jsonify, request
+from dotenv import load_dotenv
 import mysql.connector
 import uuid
 import json
+import os
 
+load_dotenv()
 
-mydb = mysql.connector.connect(
-    database="",
-    host="",
-    user="",
-    password="",
-    port=0,
-)
+db_config = {
+    'host': os.environ.get('DB_HOST'),
+    'user': os.environ.get('DB_USER'),
+    'password': os.environ.get('DB_PASSWORD'),
+    'port': int(os.environ.get('DB_PORT')),
+    'database': os.environ.get('DB_NAME'),
+}
+
+mydb = mysql.connector.connect(**db_config)
 
 cursor = mydb.cursor(dictionary=True)
 
