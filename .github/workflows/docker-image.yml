@@ -19,6 +19,22 @@ jobs:
       IMAGE_NAME: ghcr.io/${{ github.repository }}
       IMAGE_TAG: ${{ github.sha }}
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_DATABASE: testdb
+          MYSQL_USER: testuser
+          MYSQL_PASSWORD: testpass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -44,14 +60,15 @@ jobs:
           docker build -t $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG .
 
       # Optional: Run container with secrets for testing
-      - name: Run container with injected secrets (test)
+      - name: Run container with test MySQL service
         run: |
           docker run --rm \
-            -e DB_HOST \
-            -e DB_USER \
-            -e DB_PASSWORD \
-            -e DB_PORT \
-            -e DB_NAME \
+            -e DB_HOST=mysql \
+            -e DB_USER=testuser \
+            -e DB_PASSWORD=testpass \
+            -e DB_PORT=3306 \
+            -e DB_NAME=testdb \
+            --network host \
             $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG
 
       - name: Push Docker image
