@@ -68,7 +68,6 @@ jobs:
             -e DB_PASSWORD=testpass \
             -e DB_PORT=3306 \
             -e DB_NAME=testdb \
-            --network host \
             $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG
 
       - name: Push Docker image
