@@ -2,14 +2,14 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy requirements.txt first to leverage Docker cache if dependencies don't change
+# Copying the necessary libraries 
 COPY requirements.txt .
 
-# Install dependencies
+# Installing the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy your Python script
+# Copying the python script
 COPY baseApi.py .
 
-# Run the Python script
+# Running the Python script
 CMD ["python", "baseApi.py"]
