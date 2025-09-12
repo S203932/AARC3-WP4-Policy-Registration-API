@@ -33,7 +33,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/myapp:${{ github.sha }} .
+          docker build -t ghcr.io/${{ github.repository | toLower }}/myapp:${{ github.sha }} .
 
       # Optional: Run container with secrets for testing
       - name: Run container with injected secrets (test)
