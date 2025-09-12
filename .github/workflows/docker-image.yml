@@ -36,6 +36,18 @@ jobs:
           --health-retries=3
 
     steps:
+      - name: Create network
+        run: docker network create test-net
+
+      - name: Run MySQL container
+        run: |
+          docker run -d --rm --name mysql --network test-net \
+            -e MYSQL_ROOT_PASSWORD=rootpass \
+            -e MYSQL_DATABASE=testdb \
+            -e MYSQL_USER=testuser \
+            -e MYSQL_PASSWORD=testpass \
+            mysql:8.0
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -60,9 +72,9 @@ jobs:
           docker build -t $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG .
 
       # Optional: Run container with secrets for testing
-      - name: Run container with test MySQL service
+      - name: Run app container connected to network
         run: |
-          docker run --rm \
+          docker run --rm --network test-net \
             -e DB_HOST=mysql \
             -e DB_USER=testuser \
             -e DB_PASSWORD=testpass \
