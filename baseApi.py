@@ -78,8 +78,6 @@ def getPolicy(policy: str):
     else:
         return jsonify({"Not uuid": policy})
 
-    return jsonify({"data": policy, "someOtherInfo": "whichIsRelevant"})
-
 
 @app.route("/addPolicy/<string:policy>", methods=["POST"])
 def addPolicy(policy: str):
