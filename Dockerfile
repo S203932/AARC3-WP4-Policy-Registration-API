@@ -11,5 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copying the python script
 COPY baseApi.py .
 
+EXPOSE 8080
+
 # Running the Python script
 CMD ["python", "baseApi.py"]
