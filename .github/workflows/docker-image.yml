@@ -3,8 +3,8 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # or your deployment branch
-  workflow_dispatch:  # allows manual runs
+      - main # or your deployment branch
+  workflow_dispatch: # allows manual runs
 
 jobs:
   build:
@@ -16,10 +16,18 @@ jobs:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       DB_PORT: ${{ secrets.DB_PORT }}
       DB_NAME: ${{ secrets.DB_NAME }}
+      IMAGE_NAME: ghcr.io/${{ github.repository }}
+      IMAGE_TAG: ${{ github.sha }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set lowercase image name
+        id: prep
+        run: |
+          IMAGE_NAME_LOWER=$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_NAME_LOWER=$IMAGE_NAME_LOWER" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -33,7 +41,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository | toLower }}/myapp:${{ github.sha }} .
+          docker build -t $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG .
 
       # Optional: Run container with secrets for testing
       - name: Run container with injected secrets (test)
