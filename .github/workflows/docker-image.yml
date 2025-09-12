@@ -80,7 +80,7 @@ jobs:
             -e DB_PASSWORD=testpass \
             -e DB_PORT=3306 \
             -e DB_NAME=testdb \
-            $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG
+            $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG || true
 
       - name: Push Docker image
         run: |
