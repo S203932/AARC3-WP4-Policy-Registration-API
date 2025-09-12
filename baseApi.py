@@ -5,14 +5,23 @@ import uuid
 import json
 import os
 
+
+def get_env_variable(name, default=None, required=False):
+    value = os.environ.get(name, default)
+    if required and value is None:
+        raise RuntimeError(f"Environment variable '{name}' is required, but not present.")
+    return value
+
+
+
 load_dotenv()
 
 db_config = {
-    'host': os.environ.get('DB_HOST'),
-    'user': os.environ.get('DB_USER'),
-    'password': os.environ.get('DB_PASSWORD'),
-    'port': int(os.environ.get('DB_PORT')),
-    'database': os.environ.get('DB_NAME'),
+    'host': get_env_variable('DB_HOST', required=True),
+    'user': get_env_variable('DB_USER', required=True),
+    'password': get_env_variable('DB_PASSWORD', required=True),
+    'port': int(get_env_variable('DB_PORT', required=True)),
+    'database': get_env_variable('DB_NAME', required=True),
 }
 
 mydb = mysql.connector.connect(**db_config)
