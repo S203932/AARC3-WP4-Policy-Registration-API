@@ -52,8 +52,8 @@ jobs:
             -e DB_PASSWORD \
             -e DB_PORT \
             -e DB_NAME \
-            ghcr.io/${{ github.repository }}/myapp:${{ github.sha }}
+            $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${{ github.repository }}/myapp:${{ github.sha }}
+          docker push $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG
