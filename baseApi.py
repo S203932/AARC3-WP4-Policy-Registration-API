@@ -103,5 +103,7 @@ def uuid_validation(policy: str):
         return False
 
 
-if __name__ == "__main__":
-    app.run(debug=False, host='0.0.0.0', port=8080)
+
+# If to be run with python - uncomment
+#if __name__ == "__main__":
+#    app.run(debug=False, host='0.0.0.0', port=8080)

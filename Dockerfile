@@ -14,4 +14,4 @@ COPY baseApi.py .
 EXPOSE 8080
 
 # Running the Python script
-CMD ["python", "baseApi.py"]
+CMD ["gunicorn","-w", "4","-b", "0.0.0.0:8080", "baseApi:app"]
