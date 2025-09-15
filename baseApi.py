@@ -37,14 +37,22 @@ def home():
 
 @app.route("/getPolicies", methods=["GET"])
 def getPolicies():
+    mydb = mysql.connector.connect(**db_config)
+
+    cursor = mydb.cursor(dictionary=True)
     cursor.execute("SELECT uri,name,informational_url FROM policy_entries")
     response = cursor.fetchall()
+    mydb.close()
     return jsonify({"policies": response})
 
 
 @app.route("/getPolicy/<string:policy>", methods=["GET"])
 def getPolicy(policy: str):
     if uuid_validation(policy):
+
+        mydb = mysql.connector.connect(**db_config)
+        cursor = mydb.cursor(dictionary=True)
+
         cursor.execute('''
         WITH contact_agg AS(
         SELECT policy_uri,JSON_ARRAYAGG(JSON_OBJECT('type',type,'email', email)) AS contacts
@@ -74,6 +82,7 @@ def getPolicy(policy: str):
         '''.format(uri=policy)
         )
         response = cursor.fetchone()
+        mydb.close()
 
         # Converting to json list if not None type
         if response["contacts"] is not None:
