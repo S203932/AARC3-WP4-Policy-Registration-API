@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 import mysql.connector
+from mysql.connector import pooling
 import uuid
 import json
 import os
@@ -24,9 +25,7 @@ db_config = {
     'database': get_env_variable('DB_NAME', required=True),
 }
 
-mydb = mysql.connector.connect(**db_config)
-
-cursor = mydb.cursor(dictionary=True)
+connection_pool = pooling.MySQLConnectionPool(pool_name="mypool", pool_size=4, **db_config)
 
 app = Flask(__name__)
 
@@ -37,12 +36,11 @@ def home():
 
 @app.route("/getPolicies", methods=["GET"])
 def getPolicies():
-    mydb = mysql.connector.connect(**db_config)
-
-    cursor = mydb.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT uri,name,informational_url FROM policy_entries")
     response = cursor.fetchall()
-    mydb.close()
+    conn.close()
     return jsonify({"policies": response})
 
 
@@ -50,8 +48,8 @@ def getPolicies():
 def getPolicy(policy: str):
     if uuid_validation(policy):
 
-        mydb = mysql.connector.connect(**db_config)
-        cursor = mydb.cursor(dictionary=True)
+        conn = connection_pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
 
         cursor.execute('''
         WITH contact_agg AS(
@@ -82,7 +80,7 @@ def getPolicy(policy: str):
         '''.format(uri=policy)
         )
         response = cursor.fetchone()
-        mydb.close()
+        conn.close()
 
         # Converting to json list if not None type
         if response["contacts"] is not None:
