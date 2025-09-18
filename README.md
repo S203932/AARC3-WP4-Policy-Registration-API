@@ -20,8 +20,8 @@ These are the following ways to run the api.
 - When deploying the image on kubernetes or your given platform, provide the aformentioned database information.
 
 ## Docker file
-- One can use docker compose  given that one populates the `.env` first with the database information. 
-- Alternatively, one provide the db at runtime.
+- One can use docker compose given that one populates the `.env` first with the database information. 
+- Alternatively, one provide the db information at runtime.
 
 # Structure of the aup database
 ![Alt text](API_DB_class.jpg?raw=true "Title")
