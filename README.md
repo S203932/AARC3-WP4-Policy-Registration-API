@@ -66,8 +66,21 @@ If one does not provide a valid uri, in this example the uri presented was `4d6f
 ```
 
 Given that one has made a valid call to the endpoint the following information to the policy can be presented in json format.
-- INSERT FIELDS
-
+- uri - the uuid of the policy within the instance
+- description - a short description of the policy
+- policy_url - URL of the documentation of conditions and policies
+- auth - URI identifying the authority governing this policy
+- valid_from - time from which this policy is in effect
+- ttl - the time period after which this document should be retrieved again by consumers
+- policy_class - string from the limitative enumeration (‘purpose’, ‘acceptable-use’, ‘conditions’, ’sla’, ’privacy’)
+- notice_refresh_period - number of seconds after which this same notice has to be presented again to the same user
+- id - string containing the URI of the identifier for the policy
+- auth_name - name of the authority
+- contacts - a list of contact information holding the following values. If no contacts, then it's null
+    - type - either `standard`, `security` or `privacy`
+    - email - email of the contact
+- includes_policy_uris - list of policy uri's that are included in this policy and therefore implicitly fulfilled.
+- augment_policy_uris - list of policy uri's that are augmented by this policy, e.g. the WISE Baseline AUP itself
 
 The following is an example of a valid call to the endpoint. 
 ```json
@@ -101,4 +114,18 @@ The following is an example of a valid call to the endpoint.
 }
 ```
 
+## /
+The endpoint `/` is the landing page. One can only use the `GET` operation and the endpoint is mainly a way to confirm that the instance is running. 
+If working it should return "Hi, this is just a landing page".
 
+
+## /addPolicy/\<policy\>
+The endpoint has no function and is a work in progress. 
+It supports only the `POST` operation. 
+If one tries to access it with the `policy` called `somePolicy`, then it should return:
+```json
+{
+  "data": "Attempt to add somePolicy"
+}
+```
+The endpoint does not prompt any interaction with the database, nor stores any information given. 
