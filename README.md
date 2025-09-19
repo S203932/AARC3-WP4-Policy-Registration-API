@@ -2,7 +2,10 @@
 This is a base implementation of a policy registry API in accordance with AARC-G083
 
 # Requirements to run the api
-- A database that runs a mysql database called `aup`
+- A mysql database that has the following structure as seen below.
+
+## Structure of the aup database
+![Alt text](API_DB_class.jpg?raw=true "Title")
 
 # How to run the api
 There are different ways to run the api. True for all of them is that one needs to provide the database information to the api. 
@@ -23,5 +26,79 @@ These are the following ways to run the api.
 - One can use docker compose given that one populates the `.env` first with the database information. 
 - Alternatively, one provide the db information at runtime.
 
-# Structure of the aup database
-![Alt text](API_DB_class.jpg?raw=true "Title")
+# Api Endpoints
+The following are the available endpoints of the api. 
+
+## /getPolicies
+The endpoint `/getPolicies` presents a list of all the available policies in json format.
+One can only use a `GET` operation at this endpoint.
+For each policy one will be presented with the `name`, `uri` and `information_url`.
+- name - the name of the policy
+- uri - a 36 character uuid. It is a unique identifier for the policy within the instance.
+- information_url - a link to get further information about the given policy from the api. The link is `/getPolicy/<uri>`.
+
+The following is an example of policies returned from the given endpoint.
+```json
+{
+  "policies": [
+    {
+      "informational_url": "https://policy-api.org/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b",
+      "name": "AARC documentation example2",
+      "uri": "4a6d33b3-34c0-4d39-9c87-f39d6f932a6b"
+    },
+    {
+      "informational_url": "https://policy-api.org/getPolicy/8eaa6f4e-bf42-4cb4-8048-e26864c7ec58",
+      "name": "AARC documentation example",
+      "uri": "8eaa6f4e-bf42-4cb4-8048-e26864c7ec58"
+    }
+  ]
+}
+```
+
+## /getPolicy/\<uri\>
+The endpoint `/getPolicy/<uri>` lists the information stored related to the requested uri.
+One can only use a `GET` operation at this endpoint and most provide a valid uri, i.e. a 36 character uuid.
+If one does not provide a valid uri, in this example the uri presented was `4d6fewf33bqd3-34c0-4d39-9c87-f39d6f932a6dd`,then the follwing message will be displayed.
+```json
+{
+  "Not uuid": "4d6fewf33bqd3-34c0-4d39-9c87-f39d6f932a6dd"
+}
+```
+
+Given that one has made a valid call to the endpoint the following information to the policy can be presented in json format.
+- INSERT FIELDS
+
+
+The following is an example of a valid call to the endpoint. 
+```json
+{
+  "policy": {
+    "augment_policy_uris": [
+      "https://wise-community.org/wise-baseline-aup/v1/"
+    ],
+    "auth": "https://xenonexperiment.org/",
+    "auth_name": "Xenon-nT collaboration",
+    "contacts": [
+      {
+        "email": "grid.support@nikhef.nl",
+        "type": "standard"
+      },
+      {
+        "email": "vo-xenon-admins@biggrid.nl",
+        "type": "security"
+      }
+    ],
+    "description": "detector construction and experiment analysis for the search of dark matter using Xenon detectors",
+    "id": "https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl",
+    "includes_policy_uris": null,
+    "notice_refresh_period": null,
+    "policy_class": "purpose",
+    "policy_url": "https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl",
+    "ttl": 31557600,
+    "uri": "4a6d33b3-34c0-4d39-9c87-f39d6f932a6b",
+    "valid_from": "Fri, 29 Jul 2011 00:00:00 GMT"
+  }
+}
+```
+
+
