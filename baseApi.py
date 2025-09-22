@@ -70,12 +70,12 @@ def getPolicy(policy: str):
         SELECT p.*, c.contacts AS contacts, 
         imp.includes_policy_uris,
         aug.augment_policy_uris,
-        auth.auth_name
+        auth.uri AS aut
         FROM policy p
         LEFT JOIN contact_agg c ON p.uri = c.policy_uri
         LEFT JOIN imp_agg imp ON p.uri = imp.uri
         LEFT JOIN aug_agg aug ON p.uri = aug.uri
-        LEFT JOIN authorities auth ON p.auth = auth.uri
+        LEFT JOIN authorities auth ON p.auth_name = auth.auth_name
         WHERE p.uri = '{uri}'
         '''.format(uri=policy)
         )
