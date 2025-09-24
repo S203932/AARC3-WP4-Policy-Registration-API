@@ -70,6 +70,13 @@ jobs:
             sleep 2
           done
 
+
+
+      - name: Create MySQL user and grant permissions non-interactively
+        run: |
+          docker exec mysql mysql -uroot -p"$DB_PASSWORD" -e "CREATE USER IF NOT EXISTS 'testuser'@'%' IDENTIFIED BY 'testpass'; GRANT ALL PRIVILEGES ON testdb.* TO 'testuser'@'%'; FLUSH PRIVILEGES;"
+
+
       # Running the app for testing
       - name: Run app container connected to network
         run: |
