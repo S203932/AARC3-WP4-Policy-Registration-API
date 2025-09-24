@@ -74,13 +74,31 @@ jobs:
       # Optional: Run container with secrets for testing
       - name: Run app container connected to network
         run: |
-          timeout 10s docker run --rm --init --network test-net \
+          docker run -d --rm --name api-test --init --network test-net -p 8080:8080 \
             -e DB_HOST=mysql \
             -e DB_USER=testuser \
             -e DB_PASSWORD=testpass \
             -e DB_PORT=3306 \
             -e DB_NAME=testdb \
             $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG || true
+      
+      - name: Waiting for test-api to start
+        run: |
+          for i in {1..20}; do
+            if curl --fail http://localhost:8080/; then
+              echo "Api is running"
+              break
+              fi
+              echo "Waiting for test api to start"
+              sleep 3
+            done
+      - name: Running the tests
+        run: |
+          pytest tests
+
+      - name: Stop app container
+        if: always()
+        run: docker stop api-test || true    
 
       - name: Push Docker image
         run: |

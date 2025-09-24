@@ -3,3 +3,4 @@ Flask
 mysql-connector-python
 dotenv
 sqlparse
+requests
