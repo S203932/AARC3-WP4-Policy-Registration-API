@@ -1,31 +1,16 @@
 from flask import Flask, jsonify, request
-from dotenv import load_dotenv
 import mysql.connector
 from mysql.connector import pooling
 import uuid
 import json
-import os
+from dbInit import db_config, init_db
 
+connection_pool = pooling.MySQLConnectionPool(
+    pool_name="mypool", pool_size=4, **db_config
+)
 
-def get_env_variable(name, default=None, required=False):
-    value = os.environ.get(name, default)
-    if required and value is None:
-        raise RuntimeError(f"Environment variable '{name}' is required, but not present.")
-    return value
-
-
-
-load_dotenv()
-
-db_config = {
-    'host': get_env_variable('DB_HOST', required=True),
-    'user': get_env_variable('DB_USER', required=True),
-    'password': get_env_variable('DB_PASSWORD', required=True),
-    'port': int(get_env_variable('DB_PORT', required=True)),
-    'database': get_env_variable('DB_NAME', required=True),
-}
-
-connection_pool = pooling.MySQLConnectionPool(pool_name="mypool", pool_size=4, **db_config)
+# Init test data
+init_db(connection_pool)
 
 app = Flask(__name__)
 
@@ -33,6 +18,7 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def home():
     return "Hi, this is just a landing page"
+
 
 @app.route("/getPolicies", methods=["GET"])
 def getPolicies():
@@ -51,7 +37,8 @@ def getPolicy(policy: str):
         conn = connection_pool.get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        cursor.execute('''
+        cursor.execute(
+            """
         WITH contact_agg AS(
         SELECT policy_uri,JSON_ARRAYAGG(JSON_OBJECT('type',type,'email', email)) AS contacts
         FROM contacts
@@ -77,18 +64,26 @@ def getPolicy(policy: str):
         LEFT JOIN aug_agg aug ON p.uri = aug.uri
         LEFT JOIN authorities auth ON p.auth_name = auth.auth_name
         WHERE p.uri = '{uri}'
-        '''.format(uri=policy)
+        """.format(
+                uri=policy
+            )
         )
         response = cursor.fetchone()
         conn.close()
+        if response is None:
+            return jsonify({"Not a uuid in db": policy})
 
         # Converting to json list if not None type
         if response["contacts"] is not None:
             response["contacts"] = json.loads(response["contacts"])
         if response["includes_policy_uris"] is not None:
-            response["includes_policy_uris"] = json.loads(response["includes_policy_uris"])
+            response["includes_policy_uris"] = json.loads(
+                response["includes_policy_uris"]
+            )
         if response["augment_policy_uris"] is not None:
-            response["augment_policy_uris"] = json.loads(response["augment_policy_uris"])
+            response["augment_policy_uris"] = json.loads(
+                response["augment_policy_uris"]
+            )
 
         return jsonify({"policy": response})
     else:
@@ -110,7 +105,6 @@ def uuid_validation(policy: str):
         return False
 
 
-
 # If to be run with python - uncomment
 #if __name__ == "__main__":
-#    app.run(debug=False, host='0.0.0.0', port=8080)
+#   app.run(debug=False, host='0.0.0.0', port=8080)

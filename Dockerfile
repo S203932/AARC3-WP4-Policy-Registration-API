@@ -8,8 +8,13 @@ COPY requirements.txt .
 # Installing the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copying the python script
+# Copying the python scripts
 COPY baseApi.py .
+COPY dbInit.py .
+
+# Copying the test data
+COPY initializationDB.sql .
+
 
 EXPOSE 8080
 
