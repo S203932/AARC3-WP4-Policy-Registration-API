@@ -1,6 +1,7 @@
 import pytest
 import requests
 import os
+from mysql.connector import pooling
 
 db_config = {
     "host": os.environ.get("DB_HOST"),
@@ -16,6 +17,6 @@ connection_pool = pooling.MySQLConnectionPool(
 
 
 def testLandingPage():
-    response = requests.get('http://localhost:8080/')
+    response = requests.get("http://localhost:8080/")
 
-    assert response == 'Hi, this is just a landing page'
+    assert response == "Hi, this is just a landing page"
