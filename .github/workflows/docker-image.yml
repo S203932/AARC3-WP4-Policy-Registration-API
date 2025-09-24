@@ -47,15 +47,11 @@ jobs:
         run: |
           docker build -t $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG .
 
-      # Creating the network between the containers
-      - name: Create network
-        run: docker network create test-net
-
       
       #Starting my db for testing on the shared network
       - name: Run MySQL container
         run: |
-          docker run -d --name mysql --network test-net \
+          docker run -d --name mysql \
             -e MYSQL_ROOT_PASSWORD=$DB_PASSWORD \
             -e MYSQL_DATABASE=$DB_NAME \
             -e MYSQL_USER=$DB_USER \
@@ -76,13 +72,23 @@ jobs:
       # Running the app for testing
       - name: Run app container connected to network
         run: |
-          docker run -d --name api-test --init --network test-net \
+          docker run -d --name api-test --init \
             -e DB_HOST=$DB_HOST \
             -e DB_USER=$DB_USER \
             -e DB_PASSWORD=$DB_PASSWORD \
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
             $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG || true
+
+
+
+      - name: Attaching containers to same network
+        run: |
+          docker network create test-net
+          docker network connect test-net mysql
+          docker network connect test-net api-test
+          docker network inspect test-net
+
 
       - name: Wait for API to be ready
         run: |
@@ -102,7 +108,9 @@ jobs:
           FROM python:3.11-slim
           WORKDIR /app
           COPY . .
-          RUN pip install --no-cache-dir -r requirements.txt
+          RUN pip install --upgrade pip && \
+              pip install -r requirements.txt && \
+              pip install pytest mysql-connector-python
           CMD ["pytest", "tests"]
           EOF
 
