@@ -20,15 +20,18 @@ jobs:
       IMAGE_TAG: base-implementation
 
     steps:
+      
 
-      - name: Checkout code
-        uses: actions/checkout@v3
-
+      # Necessary as I need to convert the image name to lower case, cause linux reasons
       - name: Set lowercase image name
         id: prep
         run: |
           IMAGE_NAME_LOWER=$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')
           echo "IMAGE_NAME_LOWER=$IMAGE_NAME_LOWER" >> $GITHUB_ENV
+
+
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -44,17 +47,15 @@ jobs:
         run: |
           docker build -t $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG .
 
-
-
-
-
+      # Creating the network between the containers
       - name: Create network
         run: docker network create test-net
 
-
+      
+      #Starting my db for testing on the shared network
       - name: Run MySQL container
         run: |
-          docker run -d --rm --name mysql --network test-net\
+          docker run -d --name mysql --network test-net\
             -e MYSQL_ROOT_PASSWORD=$DB_PASSWORD \
             -e MYSQL_DATABASE=$DB_NAME \
             -e MYSQL_USER=$DB_USER \
