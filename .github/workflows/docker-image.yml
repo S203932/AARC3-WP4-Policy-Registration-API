@@ -11,29 +11,14 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_HOST: localhost
+      DB_HOST: mysql
       DB_USER: testuser
-      DB_PASSWORD: rootpass
+      DB_PASSWORD: testpass
+      DB_ROOTPASSWORD: rootpass
       DB_PORT: 3306
       DB_NAME: testdb
       IMAGE_NAME: ghcr.io/${{ github.repository }}
       IMAGE_TAG: base-implementation
-
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: rootpass
-          MYSQL_DATABASE: testdb
-          MYSQL_USER: testuser
-          MYSQL_PASSWORD: testpass
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
 
     steps:
       - name: Create network
@@ -41,8 +26,8 @@ jobs:
 
       - name: Run MySQL container
         run: |
-          docker run -d --rm --name mysql --network test-net \
-            -e MYSQL_ROOT_PASSWORD=rootpass \
+          docker run -d --rm --name mysql --network test-net -p 3306:3306\
+            -e MYSQL_ROOT_PASSWORD=$DB_ROOTPASS \
             -e MYSQL_DATABASE=$DB_NAME \
             -e MYSQL_USER=$DB_USER \
             -e MYSQL_PASSWORD=$DB_PASSWORD \
@@ -101,7 +86,7 @@ jobs:
 
       - name: Running the tests
         env:
-          DB_HOST: ${{ env.DB_HOST }}
+          DB_HOST: localhost
           DB_USER: ${{ env.DB_USER }}
           DB_PASSWORD: ${{ env.PASSWORD }}
           DB_PORT: ${{ env.DB_PORT }}
