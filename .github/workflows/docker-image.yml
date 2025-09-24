@@ -68,12 +68,15 @@ jobs:
             echo "Waiting for MySQL..."
             sleep 2
           done
+      - name: Ensuring priviliges for user on DB
+        run: |
+          docker exec -it mysql mysql -u root -p
 
       # Running the app for testing
       - name: Run app container connected to network
         run: |
           docker run -d --name api-test --init \
-            -e DB_HOST=172.18.0.2 \
+            -e DB_HOST=$DB_HOST \
             -e DB_USER=$DB_USER \
             -e DB_PASSWORD=$DB_PASSWORD \
             -e DB_PORT=$DB_PORT \
