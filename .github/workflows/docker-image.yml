@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_PORT: ${{ secrets.DB_PORT }}
-      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_HOST: mysql
+      DB_USER: testuser
+      DB_PASSWORD: testpass
+      DB_PORT: 3306
+      DB_NAME: testdb
       IMAGE_NAME: ghcr.io/${{ github.repository }}
       IMAGE_TAG: base-implementation
 
@@ -43,9 +43,9 @@ jobs:
         run: |
           docker run -d --rm --name mysql --network test-net \
             -e MYSQL_ROOT_PASSWORD=rootpass \
-            -e MYSQL_DATABASE=testdb \
-            -e MYSQL_USER=testuser \
-            -e MYSQL_PASSWORD=testpass \
+            -e MYSQL_DATABASE=$DB_NAME \
+            -e MYSQL_USER=$DB_USER \
+            -e MYSQL_PASSWORD=$DB_PASSWORD \
             mysql:8.0
 
       - name: Checkout code
@@ -75,11 +75,11 @@ jobs:
       - name: Run app container connected to network
         run: |
           docker run -d --rm --name api-test --init --network test-net -p 8080:8080 \
-            -e DB_HOST=mysql \
-            -e DB_USER=testuser \
-            -e DB_PASSWORD=testpass \
-            -e DB_PORT=3306 \
-            -e DB_NAME=testdb \
+            -e DB_HOST=$DB_HOST \
+            -e DB_USER=$DB_USER \
+            -e DB_PASSWORD=$DB_PASSWORD \
+            -e DB_PORT=$DB_PORT \
+            -e DB_NAME=$DB_NAME \
             $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG || true
       
       - name: Waiting for test-api to start
@@ -103,7 +103,7 @@ jobs:
         env:
           DB_HOST: ${{ env.DB_HOST }}
           DB_USER: ${{ env.DB_USER }}
-          DB_PASSWORD: ${{ env.DB_PASSWORD }}
+          DB_PASSWORD: ${{ env.PASSWORD }}
           DB_PORT: ${{ env.DB_PORT }}
           DB_NAME: ${{ env.DB_NAME }}
           APP_URL: http://localhost:8080
