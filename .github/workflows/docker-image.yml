@@ -3,8 +3,8 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main # or your deployment branch
-  workflow_dispatch: # allows manual runs
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,7 +14,6 @@ jobs:
       DB_HOST: localhost
       DB_USER: testuser
       DB_PASSWORD: testpass
-      DB_ROOTPASSWORD: rootpass
       DB_PORT: 3306
       DB_NAME: testdb
       IMAGE_NAME: ghcr.io/${{ github.repository }}
@@ -70,7 +69,7 @@ jobs:
       # Optional: Run container with secrets for testing
       - name: Run app container connected to network
         run: |
-          docker run -d --rm --name api-test --init --network test-net \
+          docker run -d --name api-test --init --network test-net \
             -e DB_HOST=$DB_HOST \
             -e DB_USER=$DB_USER \
             -e DB_PASSWORD=$DB_PASSWORD \
