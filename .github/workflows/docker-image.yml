@@ -77,11 +77,6 @@ jobs:
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
             $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG || true
-
-      - name: Manual curl debug
-        run: |
-          docker run --rm --network test-net curlimages/curl:latest \
-            curl -v http://api-test:8080/
       
       - name: Wait for API to be ready
         run: |
