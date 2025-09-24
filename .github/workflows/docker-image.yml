@@ -56,6 +56,7 @@ jobs:
             -e MYSQL_DATABASE=$DB_NAME \
             -e MYSQL_USER=$DB_USER \
             -e MYSQL_PASSWORD=$DB_PASSWORD \
+            -v ${{ github.workspace }}/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql:ro \
             mysql:8.0
 
       - name: Wait for MySQL to be ready
@@ -68,14 +69,6 @@ jobs:
             echo "Waiting for MySQL..."
             sleep 2
           done
-
-
-      - name: Ensuring priviliges for user on DB
-        run: |
-          docker exec mysql mysql -uroot -p$DB_PASSWORD -e "CREATE USER IF NOT EXISTS 'testuser'@'%' IDENTIFIED BY 'testpass';\
-          GRANT ALL PRIVILEGES ON testdb.* TO 'testuser'@'%';\
-          FLUSH PRIVILEGES;"
-
 
       # Running the app for testing
       - name: Run app container connected to network
