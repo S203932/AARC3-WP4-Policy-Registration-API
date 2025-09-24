@@ -55,7 +55,7 @@ jobs:
       #Starting my db for testing on the shared network
       - name: Run MySQL container
         run: |
-          docker run -d --name mysql --network test-net\
+          docker run -d --name mysql --network test-net \
             -e MYSQL_ROOT_PASSWORD=$DB_PASSWORD \
             -e MYSQL_DATABASE=$DB_NAME \
             -e MYSQL_USER=$DB_USER \
@@ -102,18 +102,11 @@ jobs:
           FROM python:3.11-slim
           WORKDIR /app
           COPY . .
-          RUN pip install --upgrade pip && \
-              pip install -r requirements.txt && \
-              pip install pytest mysql-connector-python
+          RUN pip install --no-cache-dir -r requirements.txt
           CMD ["pytest", "tests"]
           EOF
 
           docker run --rm --name test-runner --network test-net \
-            -e DB_HOST=$DB_HOST \
-            -e DB_USER=$DB_USER \
-            -e DB_PASSWORD=$DB_PASSWORD \
-            -e DB_PORT=$DB_PORT \
-            -e DB_NAME=$DB_NAME \
             -e APP_URL=http://api-test:8080 \
             test-runner
 
