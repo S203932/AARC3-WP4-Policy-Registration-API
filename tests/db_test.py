@@ -11,12 +11,15 @@ db_config = {
     "database": os.environ.get("DB_NAME"),
 }
 
+baseUrl = os.environ.get("APP_URL")
+
 connection_pool = pooling.MySQLConnectionPool(
     pool_name="mypool", pool_size=4, **db_config
 )
 
 
+
 def testLandingPage():
-    response = requests.get("http://localhost:8080/")
+    response = requests.get(baseUrl)
 
     assert response == "Hi, this is just a landing page"
