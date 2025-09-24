@@ -86,7 +86,7 @@ jobs:
 
       - name: Wait for API to be ready
         run: |
-          for i in {1..20}; do
+          for i in {1..5}; do
             if docker run --rm --network test-net curlimages/curl:latest \
                 curl -s --fail http://api-test:8080/; then
               echo "API is ready"
