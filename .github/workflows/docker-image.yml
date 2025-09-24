@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_HOST: mysql
+      DB_HOST: localhost
       DB_USER: testuser
       DB_PASSWORD: testpass
       DB_ROOTPASSWORD: rootpass
@@ -24,17 +24,28 @@ jobs:
       - name: Create network
         run: docker network create test-net
 
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Run MySQL container
         run: |
-          docker run -d --rm --name mysql --network test-net -p 3306:3306\
-            -e MYSQL_ROOT_PASSWORD=$DB_ROOTPASS \
+          docker run -d --rm --name mysql --network test-net\
+            -e MYSQL_ROOT_PASSWORD=$DB_PASSWORD \
             -e MYSQL_DATABASE=$DB_NAME \
             -e MYSQL_USER=$DB_USER \
             -e MYSQL_PASSWORD=$DB_PASSWORD \
             mysql:8.0
 
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..30}; do
+            if docker exec mysql mysqladmin ping -h localhost --silent; then
+              echo "MySQL is ready"
+              break
+            fi
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
 
       - name: Set lowercase image name
         id: prep
@@ -59,7 +70,7 @@ jobs:
       # Optional: Run container with secrets for testing
       - name: Run app container connected to network
         run: |
-          docker run -d --rm --name api-test --init --network test-net -p 8080:8080 \
+          docker run -d --rm --name api-test --init --network test-net \
             -e DB_HOST=$DB_HOST \
             -e DB_USER=$DB_USER \
             -e DB_PASSWORD=$DB_PASSWORD \
@@ -67,33 +78,39 @@ jobs:
             -e DB_NAME=$DB_NAME \
             $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG || true
       
-      - name: Waiting for test-api to start
+      - name: Wait for API to be ready
         run: |
           for i in {1..20}; do
-            if curl --fail http://localhost:8080/; then
-              echo "Api is running"
+            if docker run --rm --network test-net curlimages/curl:latest \
+                curl -s --fail http://api-test:8080/; then
+              echo "API is ready"
               break
-              fi
-              echo "Waiting for test api to start"
-              sleep 3
-            done
+            fi
+            echo "Waiting for API to be ready..."
+            sleep 3
+          done
 
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest mysql-connector-python
 
-      - name: Running the tests
-        env:
-          DB_HOST: localhost
-          DB_USER: ${{ env.DB_USER }}
-          DB_PASSWORD: ${{ env.PASSWORD }}
-          DB_PORT: ${{ env.DB_PORT }}
-          DB_NAME: ${{ env.DB_NAME }}
-          APP_URL: http://localhost:8080
+      - name: Run tests inside container
         run: |
-          pytest tests
+          docker build -t test-runner -f- . <<EOF
+          FROM python:3.11-slim
+          WORKDIR /app
+          COPY . .
+          RUN pip install --upgrade pip && \
+              pip install -r requirements.txt && \
+              pip install pytest mysql-connector-python
+          CMD ["pytest", "tests"]
+          EOF
+
+          docker run --rm --name test-runner --network test-net \
+            -e DB_HOST=$DB_HOST \
+            -e DB_USER=$DB_USER \
+            -e DB_PASSWORD=$DB_PASSWORD \
+            -e DB_PORT=$DB_PORT \
+            -e DB_NAME=$DB_NAME \
+            -e APP_URL=http://api-test:8080 \
+            test-runner
 
       - name: Stop app container
         if: always()
