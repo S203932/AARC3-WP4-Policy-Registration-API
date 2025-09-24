@@ -1,12 +1,13 @@
 import pytest
 import requests
+import os
 
 db_config = {
-    "host": get_env_variable("DB_HOST", required=True),
-    "user": get_env_variable("DB_USER", required=True),
-    "password": get_env_variable("DB_PASSWORD", required=True),
-    "port": int(get_env_variable("DB_PORT", required=True)),
-    "database": get_env_variable("DB_NAME", required=True),
+    "host": os.environ.get("DB_HOST"),
+    "user": os.environ.get("DB_USER"),
+    "password": os.environ.get("DB_PASSWORD"),
+    "port": int(os.environ.get("DB_PORT")),
+    "database": os.environ.get("DB_NAME"),
 }
 
 connection_pool = pooling.MySQLConnectionPool(
