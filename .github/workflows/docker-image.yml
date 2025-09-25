@@ -70,7 +70,10 @@ jobs:
             sleep 2
           done
 
-
+      - name: Start MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;" -u$DB_USER -p$DB_PASSWORD
 
       - name: Create MySQL user and grant permissions non-interactively
         run: |
@@ -122,6 +125,11 @@ jobs:
           EOF
 
           docker run --rm --name test-runner --network test-net \
+            -e DB_HOST=$DB_HOST \
+            -e DB_USER=$DB_USER \
+            -e DB_PASSWORD=$DB_PASSWORD \
+            -e DB_PORT=$DB_PORT \
+            -e DB_NAME=$DB_NAME \
             -e APP_URL=http://api-test:8080 \
             test-runner
 
