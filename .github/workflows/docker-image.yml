@@ -91,6 +91,12 @@ jobs:
         run: |
           docker network inspect test-net
 
+      - name: Debug DNS in app container
+        run: |
+          docker exec api-test cat /etc/resolv.conf || echo "No resolv.conf"
+          docker exec api-test cat /etc/hosts || echo "No hosts"
+          docker exec api-test getent hosts mysql || echo "No hosts entry for mysql"
+
 
       - name: Wait for API to be ready
         run: |
