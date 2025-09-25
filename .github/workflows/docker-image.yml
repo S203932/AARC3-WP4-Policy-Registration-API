@@ -47,11 +47,14 @@ jobs:
         run: |
           docker build -t $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG .
 
-      
+      - name: Create Docker network
+        run: docker network create test-net
+
+
       #Starting my db for testing on the shared network
       - name: Run MySQL container
         run: |
-          docker run -d --name mysql \
+          docker run -d --name mysql --network test-net \
             -e MYSQL_ROOT_PASSWORD=$DB_PASSWORD \
             -e MYSQL_DATABASE=$DB_NAME \
             -e MYSQL_USER=$DB_USER \
@@ -73,7 +76,7 @@ jobs:
       # Running the app for testing
       - name: Run app container connected to network
         run: |
-          docker run -d --name api-test --init \
+          docker run -d --name api-test --init --network test-net \
             -e DB_HOST=$DB_HOST \
             -e DB_USER=$DB_USER \
             -e DB_PASSWORD=$DB_PASSWORD \
@@ -83,11 +86,8 @@ jobs:
 
 
 
-      - name: Attaching containers to same network
+      - name: Log to see if both containers are on the network
         run: |
-          docker network create test-net
-          docker network connect test-net mysql
-          docker network connect test-net api-test
           docker network inspect test-net
 
 
