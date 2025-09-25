@@ -74,15 +74,14 @@ jobs:
 
       - name: Create MySQL user and grant permissions non-interactively
         run: |
-          docker exec mysql mysql -uroot -p"$DB_PASSWORD" -e "CREATE USER IF NOT EXISTS 'testuser'@'%' IDENTIFIED BY 'testpass'; GRANT ALL PRIVILEGES ON testdb.* TO 'testuser'@'%'; FLUSH PRIVILEGES;"
-
+          x
 
       # Running the app for testing
       - name: Run app container connected to network
         run: |
           docker run -d --name api-test --init \
             -e DB_HOST=$DB_HOST \
-            -e DB_USER=root \
+            -e DB_USER=$DB_USER \
             -e DB_PASSWORD=$DB_PASSWORD \
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
