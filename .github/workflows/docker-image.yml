@@ -82,7 +82,8 @@ jobs:
             -e DB_PASSWORD=$DB_PASSWORD \
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
-            $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG || true
+            $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG \
+            sh -c 'echo "DB_HOST=$DB_HOST"; ping -c 2 $DB_HOST'
 
 
 
@@ -102,6 +103,13 @@ jobs:
             echo "Waiting for API to be ready..."
             sleep 3
           done
+          
+      - name: Debug MySQL connectivity from app container
+        run: |
+          docker run --rm --network test-net $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG \
+          sh -c "apt update && apt install -y iputils-ping && ping -c 3 mysql"
+
+
 
       - name: Run tests inside container
         run: |
