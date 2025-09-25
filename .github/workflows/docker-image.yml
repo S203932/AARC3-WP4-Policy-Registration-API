@@ -12,7 +12,7 @@ jobs:
 
     env:
       DB_HOST: mysql
-      DB_USER: testuser
+      DB_USER: root
       DB_PASSWORD: testpass
       DB_PORT: 3306
       DB_NAME: testdb
