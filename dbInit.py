@@ -33,19 +33,19 @@ def init_db(connection_pool):
 
 load_dotenv()
 
-""" db_config = {
+db_config = {
     "host": get_env_variable("DB_HOST", required=True),
     "user": get_env_variable("DB_USER", required=True),
     "password": get_env_variable("DB_PASSWORD", required=True),
     "port": int(get_env_variable("DB_PORT", required=True)),
     "database": get_env_variable("DB_NAME", required=True),
-} """
+}
 
 
-db_config = {
+""" db_config = {
     "host": '172.18.0.2',
     "user": 'testuser',
     "password": 'testpass',
     "port": int(3306),
     "database": 'testdb'
-}
+} """
