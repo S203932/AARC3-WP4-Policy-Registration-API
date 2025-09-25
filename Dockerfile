@@ -6,10 +6,6 @@ WORKDIR /app
 COPY requirements.txt .
 
 
-# REMOVE THIS LINE
-RUN apt-get update && apt-get install -y iputils-ping && rm -rf /var/lib/apt/lists/*
-
-
 # Installing the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 

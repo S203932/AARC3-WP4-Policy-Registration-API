@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_HOST: 172.18.0.2
+      DB_HOST: mysql.test-net
       DB_USER: testuser
       DB_PASSWORD: testpass
       DB_PORT: 3306
@@ -54,12 +54,11 @@ jobs:
       #Starting my db for testing on the shared network
       - name: Run MySQL container
         run: |
-          docker run -d --name mysql --network test-net \
+          docker run -d --name mysql --network test-net -p 3306:3306\
             -e MYSQL_ROOT_PASSWORD=$DB_PASSWORD \
             -e MYSQL_DATABASE=$DB_NAME \
             -e MYSQL_USER=$DB_USER \
             -e MYSQL_PASSWORD=$DB_PASSWORD \
-            -v ${{ github.workspace }}/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql:ro \
             mysql:8.0
 
       - name: Wait for MySQL to be ready
@@ -83,38 +82,22 @@ jobs:
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
             $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG \
-            sh -c 'echo "DB_HOST=$DB_HOST"; ping -c 2 $DB_HOST'
-
-
 
       - name: Log to see if both containers are on the network
         run: |
           docker network inspect test-net
 
-      - name: Debug DNS in app container
-        run: |
-          docker exec api-test cat /etc/resolv.conf || echo "No resolv.conf"
-          docker exec api-test cat /etc/hosts || echo "No hosts"
-          docker exec api-test getent hosts mysql || echo "No hosts entry for mysql"
-
-
       - name: Wait for API to be ready
         run: |
           for i in {1..5}; do
             if docker run --rm --network test-net curlimages/curl:latest \
-                curl -s --fail http://localhost:8080/; then
+                curl -s --fail api-test.test-net:8080/; then
               echo "API is ready"
               break
             fi
             echo "Waiting for API to be ready..."
             sleep 3
           done
-
-      - name: Debug MySQL connectivity from app container
-        run: |
-          docker run --rm --network test-net $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG \
-          sh -c "apt update && apt install -y iputils-ping && ping -c 3 mysql"
-
 
 
       - name: Run tests inside container
@@ -130,12 +113,7 @@ jobs:
           EOF
 
           docker run --rm --name test-runner --network test-net \
-            -e DB_HOST=$DB_HOST \
-            -e DB_USER=$DB_USER \
-            -e DB_PASSWORD=$DB_PASSWORD \
-            -e DB_PORT=$DB_PORT \
-            -e DB_NAME=$DB_NAME \
-            -e APP_URL=http://api-test:8080 \
+            -e APP_URL=api-test.test-net:8080 \
             test-runner
 
       - name: Stop app container
