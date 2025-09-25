@@ -62,9 +62,7 @@ jobs:
             -e MYSQL_PASSWORD=$DB_PASSWORD \
             mysql:8.0
 
-      - name: Start MySQL server inside container
-        run: |
-          docker exec mysql mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid 
+
 
       - name: Wait for MySQL to be ready
         run: |
@@ -76,6 +74,10 @@ jobs:
             echo "Waiting for MySQL..."
             sleep 2
           done
+
+      - name: Start MySQL server inside container
+        run: |
+          docker exec mysql mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid 
 
       # Running the app for testing
       - name: Run app container connected to network
