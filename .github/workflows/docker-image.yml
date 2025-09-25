@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_HOST: mysql.test-net
+      DB_HOST: mysql
       DB_USER: testuser
       DB_PASSWORD: testpass
       DB_PORT: 3306
@@ -75,7 +75,7 @@ jobs:
       # Running the app for testing
       - name: Run app container connected to network
         run: |
-          docker run -d --name api-test --init --network test-net \
+          docker run -d --name api-test --network test-net \
             -e DB_HOST=$DB_HOST \
             -e DB_USER=$DB_USER \
             -e DB_PASSWORD=$DB_PASSWORD \
@@ -91,7 +91,7 @@ jobs:
         run: |
           for i in {1..5}; do
             if docker run --rm --network test-net curlimages/curl:latest \
-                curl -s --fail api-test.test-net:8080/; then
+                curl -s --fail api-test:8080/; then
               echo "API is ready"
               break
             fi
@@ -113,7 +113,7 @@ jobs:
           EOF
 
           docker run --rm --name test-runner --network test-net \
-            -e APP_URL=api-test.test-net:8080 \
+            -e APP_URL=api-test:8080 \
             test-runner
 
       - name: Stop app container
