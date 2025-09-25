@@ -74,7 +74,7 @@ jobs:
 
       - name: Create MySQL user and grant permissions non-interactively
         run: |
-          x
+          docker exec mysql ss -tlnp | grep mysqld
 
       # Running the app for testing
       - name: Run app container connected to network
