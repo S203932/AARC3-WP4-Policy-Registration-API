@@ -12,7 +12,7 @@ jobs:
 
     env:
       DB_HOST: mysql
-      DB_USER: root
+      DB_USER: testuser
       DB_PASSWORD: testpass
       DB_PORT: 3306
       DB_NAME: testdb
@@ -82,7 +82,7 @@ jobs:
         run: |
           docker run -d --name api-test --init \
             -e DB_HOST=$DB_HOST \
-            -e DB_USER=$DB_USER \
+            -e DB_USER=root \
             -e DB_PASSWORD=$DB_PASSWORD \
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
