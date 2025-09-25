@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_HOST: mysql
+      DB_HOST: 172.18.0.2.test-net
       DB_USER: testuser
       DB_PASSWORD: testpass
       DB_PORT: 3306
@@ -55,7 +55,7 @@ jobs:
       #Starting my db for testing on the shared network
       - name: Run MySQL container
         run: |
-          docker run -d --name mysql --alias mysql --network test-net -p 3306:3306\
+          docker run -d --name mysql --network test-net -p 3306:3306\
             -e MYSQL_ROOT_PASSWORD=$DB_PASSWORD \
             -e MYSQL_DATABASE=$DB_NAME \
             -e MYSQL_USER=$DB_USER \
