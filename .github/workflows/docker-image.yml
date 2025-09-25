@@ -70,15 +70,6 @@ jobs:
             sleep 2
           done
 
-      - name: Start MySQL
-        run: |
-          sudo /etc/init.d/mysql start
-          mysql -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;" -u$DB_USER -p$DB_PASSWORD
-
-      - name: Create MySQL user and grant permissions non-interactively
-        run: |
-          docker exec mysql ss -tlnp | grep mysqld
-
       # Running the app for testing
       - name: Run app container connected to network
         run: |
@@ -140,6 +131,10 @@ jobs:
       - name: Debug API container logs
         if: always()
         run: docker logs api-test || true
+
+      - name: Debug mysql container logs
+        if: always()
+        run: docker logs mysql || true
 
       - name: Push Docker image
         run: |
