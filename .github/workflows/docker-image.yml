@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_HOST: mysql
+      DB_HOST: 172.18.0.2
       DB_USER: testuser
       DB_PASSWORD: testpass
       DB_PORT: 3306
@@ -103,7 +103,7 @@ jobs:
             echo "Waiting for API to be ready..."
             sleep 3
           done
-          
+
       - name: Debug MySQL connectivity from app container
         run: |
           docker run --rm --network test-net $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG \
