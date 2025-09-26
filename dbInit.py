@@ -22,7 +22,8 @@ def init_db(connection_pool):
     file.close()
         
     commands = sqlparse.split(sql_db_init)
-    conn = connection_pool.get_connection()
+
+    conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor(dictionary=True)
 
     for command in commands:
