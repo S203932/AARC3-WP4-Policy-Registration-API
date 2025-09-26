@@ -13,6 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY baseApi.py .
 COPY dbInit.py .
 COPY tests/db_test.py .
+COPY util.py .
 
 # Copying the test data
 COPY initializationDB.sql .
