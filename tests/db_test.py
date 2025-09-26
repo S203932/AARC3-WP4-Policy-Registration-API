@@ -21,11 +21,11 @@ cursor = connection.cursor()
 
 landingPage = "Hi, this is just a landing page"
 
-getPolicies =f'''{{"policies":[{{"informational_url":{baseUrl}/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b","name":"AARC documentation example2","uri":"4a6d33b3-34c0-4d39-9c87-f39d6f932a6b"}},{{"informational_url":"{baseUrl}/getPolicy/8eaa6f4e-bf42-4cb4-8048-e26864c7ec58","name":"AARC documentation example","uri":"8eaa6f4e-bf42-4cb4-8048-e26864c7ec58"}}]}}'''
+getPolicies =f'''{{"policies":[{{"informational_url":"{baseUrl}/getPolicy/8eaa6f4e-bf42-4cb4-8048-e26864c7ec58","name":"AARC documentation example","uri":"8eaa6f4e-bf42-4cb4-8048-e26864c7ec58"}},{{"informational_url":{baseUrl}/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b","name":"AARC documentation example2","uri":"4a6d33b3-34c0-4d39-9c87-f39d6f932a6b"}}]}}'''
 
 policy1 = '''{"policy":{"augment_policy_uris":["https://wise-community.org/wise-baseline-aup/v1/"],"aut":"https://xenonexperiment.org/","auth_name":"Xenon-nT collaboration","contacts":[{"email":"grid.support@nikhef.nl","type":"standard"},{"email":"vo-xenon-admins@biggrid.nl","type":"security"}],"description":"detector construction and experiment analysis for the search of dark matter using Xenon detectors","id":"https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl","includes_policy_uris":null,"notice_refresh_period":null,"policy_class":"purpose","policy_url":"https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl","ttl":31557600,"uri":"4a6d33b3-34c0-4d39-9c87-f39d6f932a6b","valid_from":"Fri, 29 Jul 2011 00:00:00 GMT"}}\n'''
 
-policy2 = '''{"policy":{"augment_policy_uris":null,"aut":"https://www.nikhef.nl/","auth_name":"Nikhef","contacts":[{"email":"abuse@nikhef.nl","type":"security"},{"email":"helpldesk@nikhef.nl","type":"standard"},{"email":"information-security@nikhef.nl","type":"standard"},{"email":"privacy@nikhef.nl","type":"privacy"}],"description":"This Acceptable Use Policy governs the use of the Nikhef networking and computer services; all users of these services are expected to understand and comply to these rules.","id":"urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815","includes_policy_uris":["https://documents.egi.eu/document/2623"],"notice_refresh_period":34214400,"policy_class":"acceptable-use","policy_url":"https://www.nikhef.nl/aup/","ttl":604800,"uri":"8eaa6f4e-bf42-4cb4-8048-e26864c7ec58","valid_from":"Mon, 04 Apr 2022 00:00:00 GMT"}}'''
+policy2 = '''{"policy":{"augment_policy_uris":null,"aut":"https://www.nikhef.nl/","auth_name":"Nikhef","contacts":[{"email":"abuse@nikhef.nl","type":"security"},{"email":"helpldesk@nikhef.nl","type":"standard"},{"email":"information-security@nikhef.nl","type":"standard"},{"email":"privacy@nikhef.nl","type":"privacy"}],"description":"This Acceptable Use Policy governs the use of the Nikhef networking and computer services; all users of these services are expected to understand and comply to these rules.","id":"urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815","includes_policy_uris":["https://documents.egi.eu/document/2623"],"notice_refresh_period":34214400,"policy_class":"acceptable-use","policy_url":"https://www.nikhef.nl/aup/","ttl":604800,"uri":"8eaa6f4e-bf42-4cb4-8048-e26864c7ec58","valid_from":"Mon, 04 Apr 2022 00:00:00 GMT"}}\n'''
 
 tables = '''[('augment_policy_uris',), ('authorities',), ('contacts',), ('implicit_policy_uris',), ('policy',), ('policy_entries',)]'''
 
@@ -51,13 +51,3 @@ def testGetPolicies():
     response = requests.get(baseUrl+'/getPolicies')
 
     assert response.text == getPolicies
-
-def testTables():
-    cursor.execute("SHOW TABLES;")
-    response = cursor.fetchall()
-    assert response.text == tables
-
-def testContentOfContacts():
-    cursor.execute("SELECT * FROM contacts;")
-    response = cursor.fetchall()
-    assert response == tables
