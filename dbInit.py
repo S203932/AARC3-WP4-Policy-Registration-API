@@ -34,7 +34,7 @@ def init_db(connection_pool):
             try:
                 cursor.execute(command)
                 logger.info(f'Following command succeded:{command[:30]}')
-            except mysql.connector.Error as err:
+            except mysql.connector.errors.IntegrityError as err:
                 logger.error(f"Failed command: {command[:30]}")
                 print(f"Error:{err}")
                 print(f"Failed command: {command[:30]}")
