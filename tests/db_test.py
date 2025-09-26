@@ -52,5 +52,5 @@ def testGetPolicy2():
 def testGetPolicies():
     response = requests.get(baseUrl+'/getPolicies')
 
-    assert response.text == "nope"
+    assert response.text == getPolicies
 
