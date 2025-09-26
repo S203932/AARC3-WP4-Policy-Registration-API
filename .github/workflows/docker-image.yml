@@ -113,6 +113,12 @@ jobs:
           echo "The API is unreachable"
           exit 1
 
+      # Giving time to the api to init the db
+      - name: Giving the api time to init the db
+        run: |
+          sleep 20
+
+
       # Creating a container that will run the tests
       - name: Run tests inside container
         run: |
