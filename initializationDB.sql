@@ -54,14 +54,22 @@ CREATE TABLE IF NOT EXISTS `augment_policy_uris` (
   CONSTRAINT `augment_policy_uris_ibfk_2` FOREIGN KEY (`uri`) REFERENCES `policy_entries` (`uri`)
 );
 
+INSERT INTO policy_entries(uri,name,informational_url,owner)
+VALUES('4a6d33b3-34c0-4d39-9c87-f39d6f932a6b',
+'AARC documentation example2',
+'REPLACE_BASE_FOR_UUID/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b',
+'Owner is later to be decided'),
+('8eaa6f4e-bf42-4cb4-8048-e26864c7ec58',
+'AARC documentation example',
+'REPLACE_BASE_FOR_UUID/getPolicy/8eaa6f4e-bf42-4cb4-8048-e26864c7ec58',
+'Owner is later to be decided');
 
 
-
-INSERT IGNORE INTO authorities(uri,auth_name)
+INSERT INTO authorities(uri,auth_name)
 VALUES ('https://www.nikhef.nl/', 'Nikhef'), ('https://xenonexperiment.org/', 'Xenon-nT collaboration');
 
 
-INSERT IGNORE INTO contacts(type, email, policy_uri)
+INSERT INTO contacts(type, email, policy_uri)
 VALUES ('standard', 'grid.support@nikhef.nl', '4a6d33b3-34c0-4d39-9c87-f39d6f932a6b'),
 ('security', 'vo-xenon-admins@biggrid.nl', '4a6d33b3-34c0-4d39-9c87-f39d6f932a6b'),
 ('security', 'abuse@nikhef.nl', '8eaa6f4e-bf42-4cb4-8048-e26864c7ec58'),
@@ -70,35 +78,36 @@ VALUES ('standard', 'grid.support@nikhef.nl', '4a6d33b3-34c0-4d39-9c87-f39d6f932
 ('privacy', 'privacy@nikhef.nl', '8eaa6f4e-bf42-4cb4-8048-e26864c7ec58');
 
 
-INSERT IGNORE INTO implicit_policy_uris(uri, implicit_uri)
+INSERT INTO implicit_policy_uris(uri, implicit_uri)
 VALUES ('8eaa6f4e-bf42-4cb4-8048-e26864c7ec58', 'https://documents.egi.eu/document/2623');
 
 INSERT IGNORE INTO augment_policy_uris(uri, augment_uri)
 VALUES ('4a6d33b3-34c0-4d39-9c87-f39d6f932a6b', 'https://wise-community.org/wise-baseline-aup/v1/');
 
-INSERT IGNORE INTO policy(uri, description, policy_url, auth_name, valid_from, ttl, policy_class, notice_refresh_period, id)
+INSERT INTO policy(uri, description, policy_url, auth_name, valid_from, ttl, policy_class, notice_refresh_period, id)
 VALUES ('4a6d33b3-34c0-4d39-9c87-f39d6f932a6b', 
 'detector construction and experiment analysis for the search of dark matter using Xenon detectors',
 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl',
 'Xenon-nT collaboration',
-'1311890400',
+'2011-07-29 00:00:00',
 '31557600',
 'purpose',
 NULL,
 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl');
 
-INSERT IGNORE INTO policy(uri, description, policy_url, auth_name, valid_from, ttl, policy_class, notice_refresh_period, id)
+INSERT INTO policy(uri, description, policy_url, auth_name, valid_from, ttl, policy_class, notice_refresh_period, id)
 VALUES ('8eaa6f4e-bf42-4cb4-8048-e26864c7ec58',
 'This Acceptable Use Policy governs the use of the Nikhef networking and computer services; all users of these services are expected to understand and comply to these rules.',
 'https://www.nikhef.nl/aup/',
 'Nikhef',
-'1649023200',
+'2022-04-04 00:00:00',
 '604800',
 'acceptable-use',
 '34214400',
 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815');
 
-INSERT IGNORE INTO policy_entries(uri,name,informational_url,owner)
+
+INSERT INTO policy_entries(uri,name,informational_url,owner)
 VALUES('4a6d33b3-34c0-4d39-9c87-f39d6f932a6b',
 'AARC documentation example2',
 'REPLACE_BASE_FOR_UUID/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b',

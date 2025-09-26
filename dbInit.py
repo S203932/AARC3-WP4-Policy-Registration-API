@@ -31,14 +31,14 @@ def init_db(connection_pool):
             command.replace("REPLACE_BASE_FOR_UUID",api_base)
 
         if command:
-            #try:
-            cursor.execute(command)
-            logger.info(f'Following command succeded:{command[:30]}')
-            #except mysql.connector.Error as err:
-            #    logger.error(f"Failed command: {command[:30]}")
-            #    print(f"Error:{err}")
-            #    print(f"Failed command: {command[:30]}")
-            #    conn.close()
+            try:
+                cursor.execute(command)
+                logger.info(f'Following command succeded:{command[:30]}')
+            except mysql.connector.Error as err:
+                logger.error(f"Failed command: {command[:30]}")
+                print(f"Error:{err}")
+                print(f"Failed command: {command[:30]}")
+                conn.close()
     conn.close()
 
 
