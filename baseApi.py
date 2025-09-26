@@ -18,6 +18,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    logging.info("Someone accessed the landing page")
     return "Hi, this is just a landing page"
 
 
