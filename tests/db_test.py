@@ -9,7 +9,7 @@ baseUrl = os.environ.get("APP_URL")
 getPolicies ="""{
   "policies": [
     {
-      "informational_url": "https://base-api-notice-management-api.app.cern.ch/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b",
+      "informational_url": "{baseurl}/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b",
       "name": "AARC documentation example2",
       "uri": "4a6d33b3-34c0-4d39-9c87-f39d6f932a6b"
     },

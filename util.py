@@ -8,5 +8,6 @@ def get_logger(name:str):
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
+    return logger
 
 
