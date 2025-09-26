@@ -8,21 +8,21 @@ baseUrl = os.environ.get("APP_URL")
 
 landingPage = "Hi, this is just a landing page"
 
-getPolicies ='''{
+getPolicies =f'''{{
   "policies": [
-    {
+    {{
       "informational_url": "{url}/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b",
       "name": "AARC documentation example2",
       "uri": "4a6d33b3-34c0-4d39-9c87-f39d6f932a6b"
-    },
-    {
+    }},
+    {{
       "informational_url": "{url}/getPolicy/8eaa6f4e-bf42-4cb4-8048-e26864c7ec58",
       "name": "AARC documentation example",
       "uri": "8eaa6f4e-bf42-4cb4-8048-e26864c7ec58"
-    }
+    }}
   ]
-}
-'''.format(url=baseUrl)
+}}
+'''
 
 policy1 = """{
   "policy": {
