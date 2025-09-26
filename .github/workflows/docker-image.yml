@@ -76,9 +76,9 @@ jobs:
           exit 1
 
       # Ensuring the MySQL server is running inside the container
-      - name: Start MySQL server inside container
-        run: |
-          docker exec -d mysql mysqld
+      #- name: Start MySQL server inside container
+      #  run: |
+      #    docker exec -d mysql mysqld
 
       # Running the app for testing
       - name: Run app container connected to network
