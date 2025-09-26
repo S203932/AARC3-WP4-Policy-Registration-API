@@ -76,7 +76,7 @@ jobs:
           exit 1
 
       # Ensuring the MySQL server has time to start up in the container
-      - name: Start MySQL server inside container
+      - name: Giving the MySQL server time to boot
         run: |
           sleep 20
 
