@@ -3,6 +3,7 @@ import mysql.connector
 from mysql.connector import pooling
 import uuid
 import json
+import logging
 from dbInit import db_config, init_db
 
 connection_pool = pooling.MySQLConnectionPool(
@@ -22,16 +23,19 @@ def home():
 
 @app.route("/getPolicies", methods=["GET"])
 def getPolicies():
+    logging.info("A call to getPolicies was made")
     conn = connection_pool.get_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT uri,name,informational_url FROM policy_entries")
     response = cursor.fetchall()
     conn.close()
+    logging.info("The call to getPolicies was succesfull")
     return jsonify({"policies": response})
 
 
 @app.route("/getPolicy/<string:policy>", methods=["GET"])
 def getPolicy(policy: str):
+    logging.info("A call to the getPolicy was made")
     if uuid_validation(policy):
 
         conn = connection_pool.get_connection()
@@ -84,7 +88,7 @@ def getPolicy(policy: str):
             response["augment_policy_uris"] = json.loads(
                 response["augment_policy_uris"]
             )
-
+        logging.info("The call to getPolicy was succesful")
         return jsonify({"policy": response})
     else:
         return jsonify({"Not uuid": policy})
