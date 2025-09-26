@@ -55,7 +55,7 @@ def testGetPolicies():
 def testTables():
     cursor.execute("SHOW TABLES;")
     response = cursor.fetchall()
-    assert response == tables
+    assert response.text == tables
 
 def testContentOfContacts():
     cursor.execute("SELECT * FROM contacts;")

@@ -23,7 +23,7 @@ def init_db(connection_pool):
         
     commands = sqlparse.split(sql_db_init)
 
-    conn = mysql.connector.connect(**db_config)
+    conn = mysql.connector.connect(**db_config,autocommit=True)
     cursor = conn.cursor(dictionary=True)
 
     for command in commands:
