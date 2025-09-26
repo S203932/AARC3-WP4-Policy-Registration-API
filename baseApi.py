@@ -3,7 +3,7 @@ import mysql.connector
 from mysql.connector import pooling
 import uuid
 import json
-import logging
+from util import get_logger
 from dbInit import db_config, init_db
 
 connection_pool = pooling.MySQLConnectionPool(
@@ -15,12 +15,7 @@ init_db(connection_pool)
 
 app = Flask(__name__)
 
-logger = logging.getLogger("API")
-handler = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s [%(name)-12s] %(levelname)-8s %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
+logger = get_logger(__name__)
 
 
 @app.route("/", methods=["GET", "POST"])
