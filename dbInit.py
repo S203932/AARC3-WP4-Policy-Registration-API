@@ -52,4 +52,4 @@ db_config = {
     "database": get_env_variable("DB_NAME", required=True),
 }
 
-api_base = get_env_variable("API_NAME", required=True)
+api_base = get_env_variable("APP_URL", required=True)

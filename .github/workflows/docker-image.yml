@@ -90,6 +90,7 @@ jobs:
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
             -e API_NAME=$API_NAME \
+            -e APP_URL=http://$API_HOST:8080 \
             $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG \
 
       # For testing purposes mainly, the container network has been in question during testing
