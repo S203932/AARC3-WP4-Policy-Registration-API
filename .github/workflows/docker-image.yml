@@ -75,10 +75,10 @@ jobs:
           echo "MySQL container is unreachable"
           exit 1
 
-      # Ensuring the MySQL server is running inside the container
-      #- name: Start MySQL server inside container
-      #  run: |
-      #    docker exec -d mysql mysqld
+      # Ensuring the MySQL server has time to start up in the container
+      - name: Start MySQL server inside container
+        run: |
+          sleep 20
 
       # Running the app for testing
       - name: Run app container connected to network
