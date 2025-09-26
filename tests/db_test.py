@@ -22,7 +22,7 @@ getPolicies ="""{
     }
   ]
 }
-""".format(url=baseurl)
+""".format(url=baseUrl)
 
 policy1 = """{
   "policy": {
