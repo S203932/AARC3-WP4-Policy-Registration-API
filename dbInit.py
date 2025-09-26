@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import sqlparse
+import mysql.connector
 from util import get_logger
 
 logger = get_logger(__name__)
