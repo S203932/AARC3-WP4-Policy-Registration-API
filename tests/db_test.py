@@ -6,7 +6,7 @@ import mysql.connector
 
 baseUrl = os.environ.get("APP_URL")
 
-apiBase = os.environ.get("API_HOST")
+apiBase = os.environ.get("API_NAME")
 
 
 db_config = {
