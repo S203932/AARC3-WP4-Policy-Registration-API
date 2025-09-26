@@ -6,6 +6,8 @@ import mysql.connector
 
 baseUrl = os.environ.get("APP_URL")
 
+apiBase = os.environ.get("API_HOST")
+
 
 db_config = {
     "host": os.environ.get("DB_HOST"),
@@ -21,7 +23,7 @@ cursor = connection.cursor()
 
 landingPage = "Hi, this is just a landing page"
 
-getPolicies =f'''{{"policies":[{{"informational_url":{baseUrl}/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b","name":"AARC documentation example2","uri":"4a6d33b3-34c0-4d39-9c87-f39d6f932a6b"}},{{"informational_url":"{baseUrl}/getPolicy/8eaa6f4e-bf42-4cb4-8048-e26864c7ec58","name":"AARC documentation example","uri":"8eaa6f4e-bf42-4cb4-8048-e26864c7ec58"}}]}}\n'''
+getPolicies =f'''{{"policies":[{{"informational_url":{apiBase}/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b","name":"AARC documentation example2","uri":"4a6d33b3-34c0-4d39-9c87-f39d6f932a6b"}},{{"informational_url":"{apiBase}/getPolicy/8eaa6f4e-bf42-4cb4-8048-e26864c7ec58","name":"AARC documentation example","uri":"8eaa6f4e-bf42-4cb4-8048-e26864c7ec58"}}]}}\n'''
 
 policy1 = '''{"policy":{"augment_policy_uris":["https://wise-community.org/wise-baseline-aup/v1/"],"aut":"https://xenonexperiment.org/","auth_name":"Xenon-nT collaboration","contacts":[{"email":"grid.support@nikhef.nl","type":"standard"},{"email":"vo-xenon-admins@biggrid.nl","type":"security"}],"description":"detector construction and experiment analysis for the search of dark matter using Xenon detectors","id":"https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl","includes_policy_uris":null,"notice_refresh_period":null,"policy_class":"purpose","policy_url":"https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl","ttl":31557600,"uri":"4a6d33b3-34c0-4d39-9c87-f39d6f932a6b","valid_from":"Fri, 29 Jul 2011 00:00:00 GMT"}}\n'''
 
