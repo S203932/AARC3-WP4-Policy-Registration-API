@@ -30,7 +30,7 @@ def init_db(connection_pool):
         command = command.strip()
         
         if "REPLACE_BASE_FOR_UUID" in command:
-            logger.info(f'Found a place to replace the base for actual uuid')
+            logger.info(f'Found a place to replace the base:{api_base} for actual uuid')
             command.replace("REPLACE_BASE_FOR_UUID",api_base)
 
         if command:
