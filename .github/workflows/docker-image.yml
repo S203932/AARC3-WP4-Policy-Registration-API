@@ -103,7 +103,7 @@ jobs:
           for i in {1..5}; do
             if docker run --rm --network test-net curlimages/curl:latest \
                 curl -s --fail $API_HOST:8080/; then
-              echo "/nAPI is ready"
+              echo "API is ready"
               exit 0
             fi
             echo "Waiting for API to be ready..."

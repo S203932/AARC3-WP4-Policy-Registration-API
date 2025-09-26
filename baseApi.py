@@ -25,25 +25,25 @@ logger.setLevel(logging.DEBUG)
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    logging.info("Someone accessed the landing page")
+    logger.info("Someone accessed the landing page")
     return "Hi, this is just a landing page"
 
 
 @app.route("/getPolicies", methods=["GET"])
 def getPolicies():
-    logging.info("A call to getPolicies was made")
+    logger.info("A call to getPolicies was made")
     conn = connection_pool.get_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT uri,name,informational_url FROM policy_entries")
     response = cursor.fetchall()
     conn.close()
-    logging.info("The call to getPolicies was succesfull")
+    logger.info("The call to getPolicies was succesfull")
     return jsonify({"policies": response})
 
 
 @app.route("/getPolicy/<string:policy>", methods=["GET"])
 def getPolicy(policy: str):
-    logging.info("A call to the getPolicy was made")
+    logger.info("A call to the getPolicy was made")
     if uuid_validation(policy):
 
         conn = connection_pool.get_connection()
@@ -96,7 +96,7 @@ def getPolicy(policy: str):
             response["augment_policy_uris"] = json.loads(
                 response["augment_policy_uris"]
             )
-        logging.info("The call to getPolicy was succesful")
+        logger.info("The call to getPolicy was succesful")
         return jsonify({"policy": response})
     else:
         return jsonify({"Not uuid": policy})
