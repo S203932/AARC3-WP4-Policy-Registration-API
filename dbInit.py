@@ -36,10 +36,7 @@ def init_db(connection_pool):
                 cursor.execute(command)
                 logger.info(f'Following command succeded:{command[:30]}')
             except mysql.connector.errors.IntegrityError as err:
-                logger.error(f"Failed command: {command[:30]}")
-                print(f"Error:{err}")
-                print(f"Failed command: {command[:30]}")
-                conn.close()
+                logger.error(f"Failed duplicate command: {command[:30]}")        
     conn.close()
 
 

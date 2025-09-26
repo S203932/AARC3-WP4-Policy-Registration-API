@@ -81,7 +81,7 @@ VALUES ('standard', 'grid.support@nikhef.nl', '4a6d33b3-34c0-4d39-9c87-f39d6f932
 INSERT INTO implicit_policy_uris(uri, implicit_uri)
 VALUES ('8eaa6f4e-bf42-4cb4-8048-e26864c7ec58', 'https://documents.egi.eu/document/2623');
 
-INSERT IGNORE INTO augment_policy_uris(uri, augment_uri)
+INSERT INTO augment_policy_uris(uri, augment_uri)
 VALUES ('4a6d33b3-34c0-4d39-9c87-f39d6f932a6b', 'https://wise-community.org/wise-baseline-aup/v1/');
 
 INSERT INTO policy(uri, description, policy_url, auth_name, valid_from, ttl, policy_class, notice_refresh_period, id)
