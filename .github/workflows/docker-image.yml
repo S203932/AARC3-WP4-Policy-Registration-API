@@ -66,7 +66,7 @@ jobs:
           for i in {1..30}; do
             if docker exec mysql mysqladmin ping -h localhost --silent; then
               echo "MySQL is ready"
-              break
+              exit 0
             fi
             echo "Waiting for MySQL..."
             sleep 2
@@ -104,7 +104,7 @@ jobs:
             if docker run --rm --network test-net curlimages/curl:latest \
                 curl -s --fail $API_HOST:8080/; then
               echo "API is ready"
-              break
+              exit 0
             fi
             echo "Waiting for API to be ready..."
             sleep 3
