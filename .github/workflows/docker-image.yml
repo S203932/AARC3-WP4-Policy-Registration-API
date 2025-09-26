@@ -54,7 +54,7 @@ jobs:
       - name: Run MySQL container
         run: |
           docker run -d --name mysql --hostname mysql --network test-net -p 3306:3306\
-            -e MYSQL_ROOT_PASSWORD=testpass \
+            -e MYSQL_ROOT_PASSWORD=$DB_PASSWORD \
             -e MYSQL_DATABASE=$DB_NAME \
             -e MYSQL_USER=$DB_USER \
             -e MYSQL_PASSWORD=$DB_PASSWORD \
