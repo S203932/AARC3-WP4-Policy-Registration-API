@@ -8,7 +8,7 @@ baseUrl = os.environ.get("APP_URL")
 
 landingPage = "Hi, this is just a landing page"
 
-getPolicies ="""{
+getPolicies ='''{
   "policies": [
     {
       "informational_url": "{url}/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b",
@@ -22,7 +22,7 @@ getPolicies ="""{
     }
   ]
 }
-""".format(url=baseUrl)
+'''.format(url=baseUrl)
 
 policy1 = """{
   "policy": {
