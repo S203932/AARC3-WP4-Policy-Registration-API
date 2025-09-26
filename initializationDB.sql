@@ -1,4 +1,3 @@
-
 CREATE TABLE IF NOT EXISTS policy_entries (
     uri CHAR(36) PRIMARY KEY, 
     name VARCHAR(256) NOT NULL,
