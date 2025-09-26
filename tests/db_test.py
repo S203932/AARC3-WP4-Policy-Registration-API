@@ -27,6 +27,8 @@ policy1 = '''{"policy":{"augment_policy_uris":["https://wise-community.org/wise-
 
 policy2 = '''{"policy":{"augment_policy_uris":null,"aut":"https://www.nikhef.nl/","auth_name":"Nikhef","contacts":[{"email":"abuse@nikhef.nl","type":"security"},{"email":"helpldesk@nikhef.nl","type":"standard"},{"email":"information-security@nikhef.nl","type":"standard"},{"email":"privacy@nikhef.nl","type":"privacy"}],"description":"This Acceptable Use Policy governs the use of the Nikhef networking and computer services; all users of these services are expected to understand and comply to these rules.","id":"urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815","includes_policy_uris":["https://documents.egi.eu/document/2623"],"notice_refresh_period":34214400,"policy_class":"acceptable-use","policy_url":"https://www.nikhef.nl/aup/","ttl":604800,"uri":"8eaa6f4e-bf42-4cb4-8048-e26864c7ec58","valid_from":"Mon, 04 Apr 2022 00:00:00 GMT"}}'''
 
+tables = '''[('augment_policy_uris',), ('authorities',), ('contacts',), ('implicit_policy_uris',), ('policy',), ('policy_entries',)]'''
+
 
 def testLandingPage():
     response = requests.get(baseUrl)
@@ -53,4 +55,9 @@ def testGetPolicies():
 def testTables():
     cursor.execute("SHOW TABLES;")
     response = cursor.fetchall()
-    assert response == "Something wrong"
+    assert response == tables
+
+def testContentOfContacts():
+    cursor.execute("SELECT * FROM contacts;")
+    response = cursor.fetchall()
+    assert response == tables
