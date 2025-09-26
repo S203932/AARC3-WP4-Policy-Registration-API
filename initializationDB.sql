@@ -102,9 +102,9 @@ VALUES ('8eaa6f4e-bf42-4cb4-8048-e26864c7ec58',
 INSERT IGNORE INTO policy_entries(uri,name,informational_url,owner)
 VALUES('4a6d33b3-34c0-4d39-9c87-f39d6f932a6b',
 'AARC documentation example2',
-'https://base-api-notice-management-api.app.cern.ch/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b',
+'REPLACE_BASE_FOR_UUID/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b',
 'Owner is later to be decided'),
 ('8eaa6f4e-bf42-4cb4-8048-e26864c7ec58',
 'AARC documentation example',
-'https://base-api-notice-management-api.app.cern.ch/getPolicy/8eaa6f4e-bf42-4cb4-8048-e26864c7ec58',
+'REPLACE_BASE_FOR_UUID/getPolicy/8eaa6f4e-bf42-4cb4-8048-e26864c7ec58',
 'Owner is later to be decided');

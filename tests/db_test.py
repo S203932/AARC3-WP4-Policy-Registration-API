@@ -14,3 +14,8 @@ def testLandingPage():
 
 
 
+def testGetPolicies():
+    response = requests.get(baseUrl+'/getPolicies')
+
+    assert response.text == 'THis will fail on purpose'
+

@@ -22,6 +22,10 @@ def init_db(connection_pool):
 
     for command in commands:
         command = command.strip()
+        
+        if "REPLACE_BASE_FOR_UUID" in command:
+            command.replace("REPLACE_BASE_FOR_UUID",api_base)
+            
         if command:
             try:
                 cursor.execute(command)
@@ -42,11 +46,4 @@ db_config = {
     "database": get_env_variable("DB_NAME", required=True),
 }
 
-
-""" db_config = {
-    "host": '172.18.0.2',
-    "user": 'testuser',
-    "password": 'testpass',
-    "port": int(3306),
-    "database": 'testdb'
-} """
+api_base = get_env_variable("API_NAME", required=True)
