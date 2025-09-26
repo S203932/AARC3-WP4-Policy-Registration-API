@@ -17,18 +17,19 @@ def init_db(connection_pool):
     file.close()
         
     commands = sqlparse.split(sql_db_init)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     for command in commands:
         command = command.strip()
         if command:
             try:
-                conn = connection_pool.get_connection()
-                cursor = conn.cursor(dictionary=True)
                 cursor.execute(command)
-                conn.close()
             except mysql.connector.Error as err:
                 print(f"Error:{err}")
                 print(f"Failed command: {command[:30]}")
+                conn.close()
+    conn.close()
 
 
 load_dotenv()
