@@ -16,7 +16,6 @@ jobs:
       DB_PASSWORD: testpass
       DB_PORT: 3306
       DB_NAME: testdb
-      API_NAME: api-test
       API_HOST: api-test.test-net
       IMAGE_NAME: ghcr.io/${{ github.repository }}
       IMAGE_TAG: base-implementation
@@ -89,7 +88,6 @@ jobs:
             -e DB_PASSWORD=$DB_PASSWORD \
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
-            -e API_NAME=$API_NAME \
             -e APP_URL=http://$API_HOST:8080 \
             $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG \
 
@@ -139,7 +137,6 @@ jobs:
             -e DB_PASSWORD=$DB_PASSWORD \
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
-            -e API_NAME=$API_NAME \
             -e APP_URL=http://$API_HOST:8080 \
             test-runner
 
