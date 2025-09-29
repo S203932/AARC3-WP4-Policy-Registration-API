@@ -15,6 +15,7 @@ The database information that needs to be provided are the following:
 - `DB_PASSWORD=the_AARC_User_Password`
 - `DB_PORT=the_AARC_DB_Port`
 - `DB_NAME=name_of_the_database`
+- `APP_URL=base_link_for_the_api`
 
 These are the following ways to run the api.
 
@@ -62,6 +63,12 @@ If one does not provide a valid uri, in this example the uri presented was `4d6f
 ```json
 {
   "Not uuid": "4d6fewf33bqd3-34c0-4d39-9c87-f39d6f932a6dd"
+}
+```
+If one provides a valid uuid, but it is not a known one, then the following could be presented"
+```json
+{
+  "Not a uuid in db": "4a6d33b3-34c0-4d39-9c87-f39d6f932a6d"
 }
 ```
 
