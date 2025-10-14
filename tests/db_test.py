@@ -51,12 +51,12 @@ def testLandingPage():
 
 
 def testGetPolicy1():
-    response = requests.get(baseUrl+"/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b")
+    response = requests.get(baseUrl+"/getPolicy/https%3A%2F%2Foperations-portal.egi.eu%2Fvo%2Fview%2Fvoname%2Fxenon.biggrid.nl")
 
     assert response.text == policy1
 
 def testGetPolicy2():
-    response = requests.get(baseUrl+"/getPolicy/8eaa6f4e-bf42-4cb4-8048-e26864c7ec58")
+    response = requests.get(baseUrl+"/getPolicy/urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815")
 
     assert response.text == policy2
 
