@@ -70,22 +70,6 @@ VALUES('https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl',
 INSERT INTO authorities(uri,auth_name)
 VALUES ('https://www.nikhef.nl/', 'Nikhef'), ('https://xenonexperiment.org/', 'Xenon-nT collaboration');
 
-
-INSERT INTO contacts(type, email, id)
-VALUES ('standard', 'grid.support@nikhef.nl', 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl'),
-('security', 'vo-xenon-admins@biggrid.nl', 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl'),
-('security', 'abuse@nikhef.nl', 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815'),
-('standard', 'helpldesk@nikhef.nl', 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815'),
-('standard', 'information-security@nikhef.nl', 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815'),
-('privacy', 'privacy@nikhef.nl', 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815');
-
-
-INSERT INTO implicit_policy_uris(id, implicit_uri)
-VALUES ('urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815', 'https://documents.egi.eu/document/2623');
-
-INSERT INTO augment_policy_uris(id, augment_uri)
-VALUES ('https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl', 'https://wise-community.org/wise-baseline-aup/v1/');
-
 INSERT INTO policy( description, policy_url, auth_name, valid_from, ttl, policy_class, notice_refresh_period, id)
 VALUES (
 'detector construction and experiment analysis for the search of dark matter using Xenon detectors',
@@ -108,4 +92,17 @@ VALUES (
 '34214400',
 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815');
 
+INSERT INTO contacts(type, email, id)
+VALUES ('standard', 'grid.support@nikhef.nl', 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl'),
+('security', 'vo-xenon-admins@biggrid.nl', 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl'),
+('security', 'abuse@nikhef.nl', 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815'),
+('standard', 'helpldesk@nikhef.nl', 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815'),
+('standard', 'information-security@nikhef.nl', 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815'),
+('privacy', 'privacy@nikhef.nl', 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815');
 
+
+INSERT INTO implicit_policy_uris(id, implicit_uri)
+VALUES ('urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815', 'https://documents.egi.eu/document/2623');
+
+INSERT INTO augment_policy_uris(id, augment_uri)
+VALUES ('https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl', 'https://wise-community.org/wise-baseline-aup/v1/');

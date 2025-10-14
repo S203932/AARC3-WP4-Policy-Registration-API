@@ -22,4 +22,4 @@ COPY initializationDB.sql .
 EXPOSE 8080
 
 # Running the Python script
-CMD ["gunicorn","-w", "4","-b", "0.0.0.0:8080", "baseApi:app"]
+CMD python dbInit.py && gunicorn -w 4 -b 0.0.0.0:8080 baseApi:app

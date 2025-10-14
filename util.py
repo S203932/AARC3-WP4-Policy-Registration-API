@@ -6,6 +6,8 @@ AARC3-WP4-Policy-Registration-API is distributed in the hope that it will be use
 You should have received a copy of the GNU General Public License along with AARC3-WP4-Policy-Registration-API. If not, see <https://www.gnu.org/licenses/>. 
 '''
 import logging
+import os
+from dotenv import load_dotenv
 
 
 def get_logger(name:str):
@@ -17,4 +19,23 @@ def get_logger(name:str):
     logger.setLevel(logging.DEBUG)
     return logger
 
+def get_env_variable(name, default=None, required=False):
+    value = os.environ.get(name, default)
+    if required and value is None:
+        logger.error(f"Environment variable '{name}' is required, but not present.")
+        raise RuntimeError(
+            f"Environment variable '{name}' is required, but not present."
+        )
+    return value
 
+
+load_dotenv()
+
+
+db_config = {
+    "host": get_env_variable("DB_HOST", required=True),
+    "user": get_env_variable("DB_USER", required=True),
+    "password": get_env_variable("DB_PASSWORD", required=True),
+    "port": int(get_env_variable("DB_PORT", required=True)),
+    "database": get_env_variable("DB_NAME", required=True),
+}

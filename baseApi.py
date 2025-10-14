@@ -9,15 +9,12 @@ import json
 from mysql.connector import pooling
 from flask import Flask, jsonify, request
 from rfc3986 import validators, uri_reference
-from util import get_logger
-from dbInit import db_config, init_db
+from util import get_logger, db_config
 
 connection_pool = pooling.MySQLConnectionPool(
     pool_name="mypool", pool_size=4, **db_config
 )
 
-# Init test data
-init_db(connection_pool)
 
 app = Flask(__name__)
 

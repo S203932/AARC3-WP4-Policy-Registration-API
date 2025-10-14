@@ -9,33 +9,24 @@ import os
 from dotenv import load_dotenv
 import sqlparse
 import mysql.connector
-from util import get_logger
+from util import get_logger, get_env_variable, db_config
 
 logger = get_logger(__name__)
 
-def get_env_variable(name, default=None, required=False):
-    value = os.environ.get(name, default)
-    if required and value is None:
-        logger.error(f"Environment variable '{name}' is required, but not present.")
-        raise RuntimeError(
-            f"Environment variable '{name}' is required, but not present."
-        )
-    return value
+api_base = get_env_variable("APP_URL", required=True)
 
-
-def init_db(connection_pool):
+def init_db():
     file = open('initializationDB.sql', 'r')
     sql_db_init = file.read()
     file.close()
         
     commands = sqlparse.split(sql_db_init)
-
-
+    conn = mysql.connector.connect(**db_config,autocommit=True)
+    cursor = conn.cursor(dictionary=True)
+    
     for command in commands:
-        conn = mysql.connector.connect(**db_config,autocommit=True)
-        cursor = conn.cursor(dictionary=True)
         command = command.strip()
-        
+
         if "REPLACE_BASE_FOR_UUID" in command:
             logger.info(f'Found a place to replace the base:{api_base} for actual uuid')
             command = str(command).replace("REPLACE_BASE_FOR_UUID",api_base)
@@ -47,17 +38,8 @@ def init_db(connection_pool):
                 logger.info(f'Following command succeded:{command[:30]}')
             except mysql.connector.errors.IntegrityError as err:
                 logger.error(f"Failed duplicate command: {command[:30]}")        
-        conn.close()
+    conn.close()
 
-
-load_dotenv()
-
-db_config = {
-    "host": get_env_variable("DB_HOST", required=True),
-    "user": get_env_variable("DB_USER", required=True),
-    "password": get_env_variable("DB_PASSWORD", required=True),
-    "port": int(get_env_variable("DB_PORT", required=True)),
-    "database": get_env_variable("DB_NAME", required=True),
-}
-
-api_base = get_env_variable("APP_URL", required=True)
+# Init the database and populate
+if __name__ == "__main__":
+    init_db()
