@@ -30,10 +30,10 @@ def init_db(connection_pool):
         
     commands = sqlparse.split(sql_db_init)
 
-    conn = mysql.connector.connect(**db_config,autocommit=True)
-    cursor = conn.cursor(dictionary=True)
 
     for command in commands:
+        conn = mysql.connector.connect(**db_config,autocommit=True)
+        cursor = conn.cursor(dictionary=True)
         command = command.strip()
         
         if "REPLACE_BASE_FOR_UUID" in command:
@@ -47,7 +47,7 @@ def init_db(connection_pool):
                 logger.info(f'Following command succeded:{command[:30]}')
             except mysql.connector.errors.IntegrityError as err:
                 logger.error(f"Failed duplicate command: {command[:30]}")        
-    conn.close()
+        conn.close()
 
 
 load_dotenv()

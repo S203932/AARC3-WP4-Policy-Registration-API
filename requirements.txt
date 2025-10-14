@@ -4,3 +4,4 @@ mysql-connector-python
 dotenv
 sqlparse
 requests
+rfc3986

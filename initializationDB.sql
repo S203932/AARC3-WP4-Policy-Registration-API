@@ -1,8 +1,10 @@
 CREATE TABLE IF NOT EXISTS policy_entries (
-    uri CHAR(36) PRIMARY KEY, 
-    name VARCHAR(256) NOT NULL,
-    informational_url VARCHAR(256) NOT NULL,
-    owner VARCHAR(256) NOT NULL
+  name VARCHAR(256) NOT NULL,
+  informational_url VARCHAR(256) NOT NULL,
+  owner VARCHAR(256) DEFAULT NULL,
+  id VARCHAR(256) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY name (name)
 );
 
 
@@ -14,54 +16,54 @@ CREATE TABLE IF NOT EXISTS `authorities` (
 
 
 CREATE TABLE IF NOT EXISTS `policy` (
-  uri char(36) NOT NULL,
-  description text,
-  policy_url varchar(256) DEFAULT NULL,
-  valid_from timestamp NULL DEFAULT NULL,
-  ttl int DEFAULT NULL,
-  policy_class enum('purpose','acceptable-use','conditions','sla','privacy') DEFAULT NULL,
-  notice_refresh_period int DEFAULT NULL,
-  id varchar(256) DEFAULT NULL,
-  auth_name varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`uri`),
+  `description` text,
+  `policy_url` varchar(256) DEFAULT NULL,
+  `valid_from` timestamp NULL DEFAULT NULL,
+  `ttl` int DEFAULT NULL,
+  `policy_class` enum('purpose','acceptable-use','conditions','sla','privacy') NOT NULL,
+  `notice_refresh_period` int DEFAULT NULL,
+  `id` varchar(256) NOT NULL,
+  `auth_name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `auth_name` (`auth_name`),
-  CONSTRAINT `policy_ibfk_2` FOREIGN KEY (`uri`) REFERENCES `policy_entries` (`uri`),
-  CONSTRAINT `policy_ibfk_3` FOREIGN KEY (`auth_name`) REFERENCES `authorities` (`auth_name`)
+  CONSTRAINT `policy_ibfk_3` FOREIGN KEY (`auth_name`) REFERENCES `authorities` (`auth_name`),
+  CONSTRAINT `policy_ibfk_4` FOREIGN KEY (`id`) REFERENCES `policy_entries` (`id`)
 );
 
 
 CREATE TABLE IF NOT EXISTS `contacts` (
-  type enum('standard','security','privacy') NOT NULL,
-  email varchar(255) NOT NULL,
-  policy_uri char(36) NOT NULL,
-  PRIMARY KEY (`policy_uri`,`email`,`type`),
-  CONSTRAINT `contacts_ibfk_1` FOREIGN KEY (`policy_uri`) REFERENCES `policy_entries` (`uri`)
+  `type` enum('standard','security','privacy') NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `id` varchar(256) NOT NULL,
+  PRIMARY KEY (`type`,`email`,`id`),
+  KEY `id` (`id`),
+  CONSTRAINT `contacts_ibfk_1` FOREIGN KEY (`id`) REFERENCES `policy` (`id`)
 );
 
 
 CREATE TABLE IF NOT EXISTS `implicit_policy_uris` (
-  uri char(36) NOT NULL,
-  implicit_uri varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`uri`),
-  CONSTRAINT `implicit_policy_uris_ibfk_1` FOREIGN KEY (`uri`) REFERENCES `policy_entries` (`uri`)
+  `id` varchar(256) NOT NULL,
+  `implicit_uri` varchar(256) NOT NULL,
+  PRIMARY KEY (`id`,`implicit_uri`),
+  CONSTRAINT `implicit_policy_uris_ibfk_1` FOREIGN KEY (`id`) REFERENCES `policy` (`id`)
 ); 
 
 
 CREATE TABLE IF NOT EXISTS `augment_policy_uris` (
-  uri char(36) NOT NULL,
-  augment_uri varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`uri`),
-  CONSTRAINT `augment_policy_uris_ibfk_2` FOREIGN KEY (`uri`) REFERENCES `policy_entries` (`uri`)
+  `augment_uri` varchar(256) NOT NULL,
+  `id` varchar(256) NOT NULL,
+  PRIMARY KEY (`id`,`augment_uri`),
+  CONSTRAINT `augment_policy_uris_ibfk_1` FOREIGN KEY (`id`) REFERENCES `policy` (`id`)
 );
 
-INSERT INTO policy_entries(uri,name,informational_url,owner)
-VALUES('4a6d33b3-34c0-4d39-9c87-f39d6f932a6b',
+INSERT INTO policy_entries(id,name,informational_url,owner)
+VALUES('https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl',
 'AARC documentation example2',
-'REPLACE_BASE_FOR_UUID/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b',
+'REPLACE_BASE_FOR_UUID/getPolicy/https%3A%2F%2Foperations-portal.egi.eu%2Fvo%2Fview%2Fvoname%2Fxenon.biggrid.nl',
 'Owner is later to be decided'),
-('8eaa6f4e-bf42-4cb4-8048-e26864c7ec58',
+('urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815',
 'AARC documentation example',
-'REPLACE_BASE_FOR_UUID/getPolicy/8eaa6f4e-bf42-4cb4-8048-e26864c7ec58',
+'REPLACE_BASE_FOR_UUID/getPolicy/urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815',
 'Owner is later to be decided');
 
 
@@ -69,23 +71,23 @@ INSERT INTO authorities(uri,auth_name)
 VALUES ('https://www.nikhef.nl/', 'Nikhef'), ('https://xenonexperiment.org/', 'Xenon-nT collaboration');
 
 
-INSERT INTO contacts(type, email, policy_uri)
-VALUES ('standard', 'grid.support@nikhef.nl', '4a6d33b3-34c0-4d39-9c87-f39d6f932a6b'),
-('security', 'vo-xenon-admins@biggrid.nl', '4a6d33b3-34c0-4d39-9c87-f39d6f932a6b'),
-('security', 'abuse@nikhef.nl', '8eaa6f4e-bf42-4cb4-8048-e26864c7ec58'),
-('standard', 'helpldesk@nikhef.nl', '8eaa6f4e-bf42-4cb4-8048-e26864c7ec58'),
-('standard', 'information-security@nikhef.nl', '8eaa6f4e-bf42-4cb4-8048-e26864c7ec58'),
-('privacy', 'privacy@nikhef.nl', '8eaa6f4e-bf42-4cb4-8048-e26864c7ec58');
+INSERT INTO contacts(type, email, id)
+VALUES ('standard', 'grid.support@nikhef.nl', 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl'),
+('security', 'vo-xenon-admins@biggrid.nl', 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl'),
+('security', 'abuse@nikhef.nl', 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815'),
+('standard', 'helpldesk@nikhef.nl', 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815'),
+('standard', 'information-security@nikhef.nl', 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815'),
+('privacy', 'privacy@nikhef.nl', 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815');
 
 
-INSERT INTO implicit_policy_uris(uri, implicit_uri)
-VALUES ('8eaa6f4e-bf42-4cb4-8048-e26864c7ec58', 'https://documents.egi.eu/document/2623');
+INSERT INTO implicit_policy_uris(id, implicit_uri)
+VALUES ('urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815', 'https://documents.egi.eu/document/2623');
 
-INSERT INTO augment_policy_uris(uri, augment_uri)
-VALUES ('4a6d33b3-34c0-4d39-9c87-f39d6f932a6b', 'https://wise-community.org/wise-baseline-aup/v1/');
+INSERT INTO augment_policy_uris(id, augment_uri)
+VALUES ('https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl', 'https://wise-community.org/wise-baseline-aup/v1/');
 
-INSERT INTO policy(uri, description, policy_url, auth_name, valid_from, ttl, policy_class, notice_refresh_period, id)
-VALUES ('4a6d33b3-34c0-4d39-9c87-f39d6f932a6b', 
+INSERT INTO policy( description, policy_url, auth_name, valid_from, ttl, policy_class, notice_refresh_period, id)
+VALUES (
 'detector construction and experiment analysis for the search of dark matter using Xenon detectors',
 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl',
 'Xenon-nT collaboration',
@@ -95,8 +97,8 @@ VALUES ('4a6d33b3-34c0-4d39-9c87-f39d6f932a6b',
 NULL,
 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl');
 
-INSERT INTO policy(uri, description, policy_url, auth_name, valid_from, ttl, policy_class, notice_refresh_period, id)
-VALUES ('8eaa6f4e-bf42-4cb4-8048-e26864c7ec58',
+INSERT INTO policy( description, policy_url, auth_name, valid_from, ttl, policy_class, notice_refresh_period, id)
+VALUES (
 'This Acceptable Use Policy governs the use of the Nikhef networking and computer services; all users of these services are expected to understand and comply to these rules.',
 'https://www.nikhef.nl/aup/',
 'Nikhef',
@@ -107,12 +109,3 @@ VALUES ('8eaa6f4e-bf42-4cb4-8048-e26864c7ec58',
 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815');
 
 
-INSERT INTO policy_entries(uri,name,informational_url,owner)
-VALUES('4a6d33b3-34c0-4d39-9c87-f39d6f932a6b',
-'AARC documentation example2',
-'REPLACE_BASE_FOR_UUID/getPolicy/4a6d33b3-34c0-4d39-9c87-f39d6f932a6b',
-'Owner is later to be decided'),
-('8eaa6f4e-bf42-4cb4-8048-e26864c7ec58',
-'AARC documentation example',
-'REPLACE_BASE_FOR_UUID/getPolicy/8eaa6f4e-bf42-4cb4-8048-e26864c7ec58',
-'Owner is later to be decided');
