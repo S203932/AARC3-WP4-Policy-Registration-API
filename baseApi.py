@@ -102,7 +102,7 @@ def getPolicy(policy: str):
             response["auth_languages"] = json.loads(
                 response["auth_languages"]
             )
-        logger.info("The call to getPolicy was succesful")
+        logger.info(f'The call to getPolicy was succesful:{jsonify({"policy": response})}')
         return jsonify({"policy": response})
     else:
         return jsonify({"Not a valid policy": policy})
