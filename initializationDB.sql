@@ -7,13 +7,13 @@ CREATE TABLE IF NOT EXISTS policy_entries (
   UNIQUE KEY name (name)
 );
 
-
 CREATE TABLE IF NOT EXISTS `authorities` (
-  uri varchar(256) DEFAULT NULL,
-  auth_name varchar(50) NOT NULL,
-  PRIMARY KEY (`auth_name`)
+  `auth_id` int NOT NULL AUTO_INCREMENT,
+  `uri` varchar(256) DEFAULT NULL,
+  `auth_name` varchar(50) NOT NULL,
+  `language` char(5) NOT NULL,
+  PRIMARY KEY (`auth_id`)
 );
-
 
 CREATE TABLE IF NOT EXISTS `policy` (
   `description` text,
@@ -23,10 +23,9 @@ CREATE TABLE IF NOT EXISTS `policy` (
   `policy_class` enum('purpose','acceptable-use','conditions','sla','privacy') NOT NULL,
   `notice_refresh_period` int DEFAULT NULL,
   `id` varchar(256) NOT NULL,
-  `auth_name` varchar(50) DEFAULT NULL,
+  `auth_id` int NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `auth_name` (`auth_name`),
-  CONSTRAINT `policy_ibfk_3` FOREIGN KEY (`auth_name`) REFERENCES `authorities` (`auth_name`),
+  CONSTRAINT `policy_ibfk_3` FOREIGN KEY (`auth_id`) REFERENCES `authorities` (`auth_id`),
   CONSTRAINT `policy_ibfk_4` FOREIGN KEY (`id`) REFERENCES `policy_entries` (`id`)
 );
 
@@ -67,25 +66,25 @@ VALUES('https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl',
 'Owner is later to be decided');
 
 
-INSERT INTO authorities(uri,auth_name)
-VALUES ('https://www.nikhef.nl/', 'Nikhef'), ('https://xenonexperiment.org/', 'Xenon-nT collaboration');
+INSERT INTO authorities(uri,auth_name, language)
+VALUES ('https://www.nikhef.nl/', 'Nikhef', 'stand'), ('https://xenonexperiment.org/', 'Xenon-nT collaboration', 'stand');
 
-INSERT INTO policy( description, policy_url, auth_name, valid_from, ttl, policy_class, notice_refresh_period, id)
+INSERT INTO policy( description, policy_url, auth_id, valid_from, ttl, policy_class, notice_refresh_period, id)
 VALUES (
 'detector construction and experiment analysis for the search of dark matter using Xenon detectors',
 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl',
-'Xenon-nT collaboration',
+'REPLACE_AUTH_NAME_FOR_ID:Xenon-nT collaboration:',
 '2011-07-29 00:00:00',
 '31557600',
 'purpose',
 NULL,
 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl');
 
-INSERT INTO policy( description, policy_url, auth_name, valid_from, ttl, policy_class, notice_refresh_period, id)
+INSERT INTO policy( description, policy_url, auth_id, valid_from, ttl, policy_class, notice_refresh_period, id)
 VALUES (
 'This Acceptable Use Policy governs the use of the Nikhef networking and computer services; all users of these services are expected to understand and comply to these rules.',
 'https://www.nikhef.nl/aup/',
-'Nikhef',
+'REPLACE_AUTH_NAME_FOR_ID:Nikhef:',
 '2022-04-04 00:00:00',
 '604800',
 'acceptable-use',
