@@ -80,11 +80,8 @@ def getPolicy(policy: str):
         LEFT JOIN aug_agg aug ON p.id = aug.id
         LEFT JOIN authorities auth ON p.auth_id = auth.auth_id
         LEFT JOIN auth_lang_agg auth_lan ON p.auth_id = auth_lan.auth_id
-        WHERE p.id = '{id}'
-        """.format(
-                id=policy
-            )
-        )
+        WHERE p.id = %s
+        """,(policy,))
         response = cursor.fetchone()
         conn.close()
         if response is None:
