@@ -72,9 +72,9 @@ VALUES('https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl',
 'Owner is later to be decided');
 
 
-INSERT INTO authorities(auth_id,uri, language)
-VALUES ('1','https://www.nikhef.nl/', 'stand'), 
-('2','https://xenonexperiment.org/', 'stand');
+INSERT INTO authorities(auth_id,uri)
+VALUES ('1','https://www.nikhef.nl/'), 
+('2','https://xenonexperiment.org/');
 
 INSERT INTO authority_names(auth_id,auth_name,language)
 VALUES ('1','Nikhef','stand'),
