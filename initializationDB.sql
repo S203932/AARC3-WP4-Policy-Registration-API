@@ -9,10 +9,16 @@ CREATE TABLE IF NOT EXISTS policy_entries (
 
 CREATE TABLE IF NOT EXISTS `authorities` (
   `auth_id` int NOT NULL AUTO_INCREMENT,
-  `uri` varchar(256) DEFAULT NULL,
+  `uri` VARCHAR(256) DEFAULT NULL,
+  PRIMARY KEY (`auth_id`)
+);
+
+CREATE TABLE IF NOT EXISTS `authority_names` (
+  `auth_id` int NOT NULL,
   `auth_name` varchar(50) NOT NULL,
   `language` char(5) NOT NULL,
-  PRIMARY KEY (`auth_id`)
+  PRIMARY KEY (`auth_id`, `language`),
+  FOREIGN KEY (`auth_id`) REFERENCES `authorities` (`auth_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS `policy` (
@@ -58,22 +64,27 @@ CREATE TABLE IF NOT EXISTS `augment_policy_uris` (
 INSERT INTO policy_entries(id,name,informational_url,owner)
 VALUES('https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl',
 'AARC documentation example2',
-'REPLACE_BASE_FOR_UUID/getPolicy/https%3A%2F%2Foperations-portal.egi.eu%2Fvo%2Fview%2Fvoname%2Fxenon.biggrid.nl',
+'REPLACE_BASE_FOR_ID/getPolicy/https%3A%2F%2Foperations-portal.egi.eu%2Fvo%2Fview%2Fvoname%2Fxenon.biggrid.nl',
 'Owner is later to be decided'),
 ('urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815',
 'AARC documentation example',
-'REPLACE_BASE_FOR_UUID/getPolicy/urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815',
+'REPLACE_BASE_FOR_ID/getPolicy/urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815',
 'Owner is later to be decided');
 
 
-INSERT INTO authorities(uri,auth_name, language)
-VALUES ('https://www.nikhef.nl/', 'Nikhef', 'stand'), ('https://xenonexperiment.org/', 'Xenon-nT collaboration', 'stand');
+INSERT INTO authorities(auth_id,uri, language)
+VALUES ('1','https://www.nikhef.nl/', 'stand'), 
+('2','https://xenonexperiment.org/', 'stand');
+
+INSERT INTO authority_names(auth_id,auth_name,language)
+VALUES ('1','Nikhef','stand'),
+('2','Xenon-nT collaboration','stand')
 
 INSERT INTO policy( description, policy_url, auth_id, valid_from, ttl, policy_class, notice_refresh_period, id)
 VALUES (
 'detector construction and experiment analysis for the search of dark matter using Xenon detectors',
 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl',
-'REPLACE_AUTH_NAME_FOR_ID:Xenon-nT collaboration:',
+'2',
 '2011-07-29 00:00:00',
 '31557600',
 'purpose',
@@ -84,7 +95,7 @@ INSERT INTO policy( description, policy_url, auth_id, valid_from, ttl, policy_cl
 VALUES (
 'This Acceptable Use Policy governs the use of the Nikhef networking and computer services; all users of these services are expected to understand and comply to these rules.',
 'https://www.nikhef.nl/aup/',
-'REPLACE_AUTH_NAME_FOR_ID:Nikhef:',
+'1',
 '2022-04-04 00:00:00',
 '604800',
 'acceptable-use',

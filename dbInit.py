@@ -27,21 +27,10 @@ def init_db():
     for command in commands:
         command = command.strip()
 
-        if "REPLACE_BASE_FOR_UUID" in command:
-            logger.info(f'Found a place to replace the base:{api_base} for actual uuid')
-            command = str(command).replace("REPLACE_BASE_FOR_UUID",api_base)
+        if "REPLACE_BASE_FOR_ID" in command:
+            logger.info(f'Found a place to replace the base:{api_base} for actual id')
+            command = str(command).replace("REPLACE_BASE_FOR_ID",api_base)
             logger.info(f'The replaced command:{command}')
-        
-        if "REPLACE_AUTH_NAME_FOR_ID:" in command:
-            logger.info(f'Gonna replace for auth_id')
-            startOfName = str(command).find('REPLACE_AUTH_NAME_FOR_ID:')
-            startOfReplace = startOfName
-            startOfName +=len('REPLACE_AUTH_NAME_FOR_ID:')
-            endOfName = str(command).find(':',startOfName)
-            idQuery = f'SELECT auth_id FROM authorities WHERE auth_name = \'{str(command)[startOfName:endOfName]}\';'
-            cursor.execute(idQuery)
-            auth_id = int(cursor.fetchone()["auth_id"])
-            command = str(command).replace(str(command)[startOfReplace:endOfName+1],str(auth_id))
 
         if command:
             try:
