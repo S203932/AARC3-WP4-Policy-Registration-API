@@ -68,7 +68,7 @@ def getPolicy(policy: str):
         SELECT auth_id,JSON_ARRAYAGG(JSON_OBJECT('auth_name',auth_name,'language',language)) AS auth_languages
         FROM authority_names
         GROUP BY auth_id
-        ),
+        )
         SELECT p.*, c.contacts AS contacts, 
         imp.includes_policy_uris,
         aug.augment_policy_uris,
