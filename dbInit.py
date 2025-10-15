@@ -40,7 +40,7 @@ def init_db():
             endOfName = str(command).find(':',startOfName)
             idQuery = f'SELECT auth_id FROM authorities WHERE auth_name = \'{str(command)[startOfName:endOfName]}\';'
             cursor.execute(idQuery)
-            auth_id = int(cursor.fetchone())
+            auth_id = int(cursor.fetchone()["auth_id"])
             command = str(command).replace(str(command)[startOfReplace:endOfName+1],str(auth_id))
 
         if command:
