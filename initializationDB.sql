@@ -78,7 +78,7 @@ VALUES ('1','https://www.nikhef.nl/'),
 
 INSERT INTO authority_names(auth_id,auth_name,language)
 VALUES ('1','Nikhef','stand'),
-('2','Xenon-nT collaboration','stand')
+('2','Xenon-nT collaboration','stand');
 
 INSERT INTO policy( description, policy_url, auth_id, valid_from, ttl, policy_class, notice_refresh_period, id)
 VALUES (
