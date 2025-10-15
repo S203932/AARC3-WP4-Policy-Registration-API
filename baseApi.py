@@ -63,16 +63,23 @@ def getPolicy(policy: str):
         SELECT id, JSON_ARRAYAGG(augment_uri) AS augment_policy_uris
         FROM augment_policy_uris
         GROUP BY id    
-        )
+        ),
+        auth_lang_agg AS(
+        SELECT auth_id,JSON_ARRAYAGG(JSON_OBJECT('auth_name',auth_name,'language',language)) AS auth_languages
+        FROM authority_names
+        GROUP BY auth_id
+        ),
         SELECT p.*, c.contacts AS contacts, 
         imp.includes_policy_uris,
         aug.augment_policy_uris,
+        auth_lan.auth_languages,
         auth.uri AS aut
         FROM policy p
         LEFT JOIN contact_agg c ON p.id = c.id
         LEFT JOIN imp_agg imp ON p.id = imp.id
         LEFT JOIN aug_agg aug ON p.id = aug.id
-        LEFT JOIN authorities auth ON p.auth_name = auth.auth_name
+        LEFT JOIN authorities auth ON p.auth_id = auth.auth_id
+        LEFT JOIN auth_lang_agg auth_lan ON p.auth_id = auth_lan.auth_id
         WHERE p.id = '{id}'
         """.format(
                 id=policy
@@ -93,6 +100,10 @@ def getPolicy(policy: str):
         if response["augment_policy_uris"] is not None:
             response["augment_policy_uris"] = json.loads(
                 response["augment_policy_uris"]
+            )
+        if response["auth_languages"] is not None:
+            response["auth_languages"] = json.loads(
+                response["auth_languages"]
             )
         logger.info("The call to getPolicy was succesful")
         return jsonify({"policy": response})
