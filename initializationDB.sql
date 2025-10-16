@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS `authority_names` (
 );
 
 CREATE TABLE IF NOT EXISTS `policy` (
-  `description` text,
   `policy_url` varchar(256) DEFAULT NULL,
   `valid_from` timestamp NULL DEFAULT NULL,
   `ttl` int DEFAULT NULL,
@@ -32,7 +31,15 @@ CREATE TABLE IF NOT EXISTS `policy` (
   `auth_id` int NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `policy_ibfk_3` FOREIGN KEY (`auth_id`) REFERENCES `authorities` (`auth_id`),
-  CONSTRAINT `policy_ibfk_4` FOREIGN KEY (`id`) REFERENCES `policy_entries` (`id`)
+  CONSTRAINT `policy_ibfk_4` FOREIGN KEY (`id`) REFERENCES `policy_entries` (`id`) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS `descriptions` (
+  `id` varchar(256) NOT NULL,
+  `description` text,
+  `language` char(5),
+  PRIMARY KEY (`id`,`language`),
+  CONSTRAINT `description_id` FOREIGN KEY (`id`) REFERENCES `policy` (`id`) ON DELETE CASCADE
 );
 
 
@@ -42,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `contacts` (
   `id` varchar(256) NOT NULL,
   PRIMARY KEY (`type`,`email`,`id`),
   KEY `id` (`id`),
-  CONSTRAINT `contacts_ibfk_1` FOREIGN KEY (`id`) REFERENCES `policy` (`id`)
+  CONSTRAINT `contacts_ibfk_1` FOREIGN KEY (`id`) REFERENCES `policy` (`id`) ON DELETE CASCADE
 );
 
 
@@ -50,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `implicit_policy_uris` (
   `id` varchar(256) NOT NULL,
   `implicit_uri` varchar(256) NOT NULL,
   PRIMARY KEY (`id`,`implicit_uri`),
-  CONSTRAINT `implicit_policy_uris_ibfk_1` FOREIGN KEY (`id`) REFERENCES `policy` (`id`)
+  CONSTRAINT `implicit_policy_uris_ibfk_1` FOREIGN KEY (`id`) REFERENCES `policy` (`id`) ON DELETE CASCADE
 ); 
 
 
@@ -58,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `augment_policy_uris` (
   `augment_uri` varchar(256) NOT NULL,
   `id` varchar(256) NOT NULL,
   PRIMARY KEY (`id`,`augment_uri`),
-  CONSTRAINT `augment_policy_uris_ibfk_1` FOREIGN KEY (`id`) REFERENCES `policy` (`id`)
+  CONSTRAINT `augment_policy_uris_ibfk_1` FOREIGN KEY (`id`) REFERENCES `policy` (`id`) ON DELETE CASCADE
 );
 
 INSERT INTO policy_entries(id,name,informational_url,owner)
@@ -80,9 +87,8 @@ INSERT INTO authority_names(auth_id,auth_name,language)
 VALUES ('1','Nikhef','stand'),
 ('2','Xenon-nT collaboration','stand');
 
-INSERT INTO policy( description, policy_url, auth_id, valid_from, ttl, policy_class, notice_refresh_period, id)
+INSERT INTO policy(policy_url, auth_id, valid_from, ttl, policy_class, notice_refresh_period, id)
 VALUES (
-'detector construction and experiment analysis for the search of dark matter using Xenon detectors',
 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl',
 '2',
 '2011-07-29 00:00:00',
@@ -91,9 +97,8 @@ VALUES (
 NULL,
 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl');
 
-INSERT INTO policy( description, policy_url, auth_id, valid_from, ttl, policy_class, notice_refresh_period, id)
+INSERT INTO policy(policy_url, auth_id, valid_from, ttl, policy_class, notice_refresh_period, id)
 VALUES (
-'This Acceptable Use Policy governs the use of the Nikhef networking and computer services; all users of these services are expected to understand and comply to these rules.',
 'https://www.nikhef.nl/aup/',
 '1',
 '2022-04-04 00:00:00',
@@ -101,6 +106,10 @@ VALUES (
 'acceptable-use',
 '34214400',
 'urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815');
+
+INSERT INTO descriptions(id,description, language)
+VALUES ('urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815','This Acceptable Use Policy governs the use of the Nikhef networking and computer services; all users of these services are expected to understand and comply to these rules.','stand'),
+('https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl','detector construction and experiment analysis for the search of dark matter using Xenon detectors','stand');
 
 INSERT INTO contacts(type, email, id)
 VALUES ('standard', 'grid.support@nikhef.nl', 'https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl'),
