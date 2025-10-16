@@ -79,12 +79,14 @@ def getPolicy(policy: str):
         aug.augment_policy_uris,
         auth_lan.auth_languages,
         desc_lang.description_languages,
-        auth.uri AS aut
+        auth.uri AS aut,
+        priv_pol.jurisdiction AS policy_jurisdiction
         FROM policy p
         LEFT JOIN contact_agg c ON p.id = c.id
         LEFT JOIN imp_agg imp ON p.id = imp.id
         LEFT JOIN aug_agg aug ON p.id = aug.id
         LEFT JOIN desc_lang_agg desc_lang ON p.id = desc_lang.id
+        LEFT JOIN privacy_policies priv_pol ON p.id = priv_pol.id
         LEFT JOIN authorities auth ON p.auth_id = auth.auth_id
         LEFT JOIN auth_lang_agg auth_lan ON p.auth_id = auth_lan.auth_id
         WHERE p.id = %s

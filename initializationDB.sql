@@ -42,6 +42,13 @@ CREATE TABLE IF NOT EXISTS `descriptions` (
   CONSTRAINT `description_id` FOREIGN KEY (`id`) REFERENCES `policy` (`id`) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS `privacy_policies` (
+  `id` varchar(256) NOT NULL,
+  `jurisdiction` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `priv_id` FOREIGN KEY (`id`) REFERENCES `policy` (`id`) ON DELETE CASCADE
+);
+
 
 CREATE TABLE IF NOT EXISTS `contacts` (
   `type` enum('standard','security','privacy') NOT NULL,
