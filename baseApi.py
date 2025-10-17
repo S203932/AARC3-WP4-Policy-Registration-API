@@ -74,7 +74,13 @@ def getPolicy(policy: str):
         FROM descriptions
         GROUP BY id
         )
-        SELECT p.*, c.contacts AS contacts, 
+        SELECT p.policy_url,
+        p.valid_from,
+        p.ttl,
+        p.policy_class,
+        p.notice_refresh_period,
+        p.id,
+        c.contacts AS contacts, 
         imp.includes_policy_uris,
         aug.augment_policy_uris,
         auth_lan.auth_languages,
