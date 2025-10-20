@@ -19,7 +19,7 @@ jobs:
       API_HOST: api-test.test-net
       IMAGE_NAME: ghcr.io/${{ github.repository }}
       IMAGE_TAG: base-implementation
-      INTROSPECTION_ENDPOINT: PLACE_HOLDER
+      IDP_ENDPOINT: PLACE_HOLDER
       IDP_ID: PLACE_HOLDER
       IDP_SECRET: PLACE_HOLDER
       SESSION_KEY: PLACE_HOLDER

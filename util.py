@@ -11,6 +11,7 @@ import requests
 from dotenv import load_dotenv
 from authlib.oauth2.rfc7662 import IntrospectTokenValidator
 
+logger = get_logger(__name__)
 
 def get_logger(name:str):
     logger = logging.getLogger(name)
