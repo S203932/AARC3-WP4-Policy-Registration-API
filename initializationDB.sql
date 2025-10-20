@@ -107,7 +107,7 @@ VALUES('https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl',
 INSERT INTO authorities(auth_id,uri)
 VALUES ('1','https://www.nikhef.nl/'), 
 ('2','https://xenonexperiment.org/'),
-('3','http://some-secure-place.xyz'),
+('3','https://cern.ch'),
 ('4', NULL),
 ('5', NULL)
 ;
@@ -116,8 +116,8 @@ INSERT INTO authority_names(auth_id,auth_name,language)
 VALUES ('1','Nikhef','stand'),
 ('2','Xenon-nT collaboration','stand'),
 ('2','Xenon-nT samarbejde', 'dk_DK'),
-('3','Sikkerheden selv','dk_DK'),
-('3','Security itself','stand'),
+('3','CERN','dk_DK'),
+('3','CERN','stand'),
 ('4','Auto sikkerhed','dk_DK'),
 ('5','Sicherheit fur dich', 'stand')
 ;

@@ -19,6 +19,10 @@ jobs:
       API_HOST: api-test.test-net
       IMAGE_NAME: ghcr.io/${{ github.repository }}
       IMAGE_TAG: base-implementation
+      INTROSPECTION_ENDPOINT: PLACE_HOLDER
+      IDP_ID: PLACE_HOLDER
+      IDP_SECRET: PLACE_HOLDER
+      SESSION_KEY: PLACE_HOLDER
 
     steps:
       # Necessary as I need to convert the image name to lower case, cause linux reasons
@@ -89,6 +93,10 @@ jobs:
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
             -e APP_URL=http://$API_HOST:8080 \
+            -e INTROSPECTION_ENDPOINT=$INTROSPECTION_ENDPOINT \
+            -e IDP_ID=$IDP_ID \
+            -e IDP_SECRET=$IDP_SECRET \
+            -e SESSION_KEY=$SESSION_KEY \
             $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG \
 
       # For testing purposes mainly, the container network has been in question during testing

@@ -7,7 +7,9 @@ You should have received a copy of the GNU General Public License along with AAR
 '''
 import logging
 import os
+import requests
 from dotenv import load_dotenv
+from authlib.oauth2.rfc7662 import IntrospectTokenValidator
 
 
 def get_logger(name:str):
@@ -28,9 +30,17 @@ def get_env_variable(name, default=None, required=False):
         )
     return value
 
+class CustomIntrospectTokenValidator(IntrospectTokenValidator):
+    """The following class is taken from the documentation: https://docs.authlib.org/en/latest/specs/rfc7662.html#use-introspection-in-resource-server"""
+    def introspect_token(self,token_string):
+        url = get_env_variable("IDP_ENDPOINT", required=True) + '/token/introspect'
+        data = {'token': token_string, 'token_type_hint': 'access_token'}
+        auth = (get_env_variable("IDP_ID", required=True), get_env_variable("IDP_SECRET", required=True))
+        resp = requests.post(url, data=data, auth=auth)
+        resp.raise_for_status()
+        return resp.json()
 
 load_dotenv()
-
 
 db_config = {
     "host": get_env_variable("DB_HOST", required=True),
@@ -39,3 +49,17 @@ db_config = {
     "port": int(get_env_variable("DB_PORT", required=True)),
     "database": get_env_variable("DB_NAME", required=True),
 }
+
+idp_config = {
+    'name':'idp',
+    'client_id': get_env_variable("IDP_ID", required=True),
+    'client_secret':get_env_variable("IDP_SECRET", required=True),
+    'access_token_url':get_env_variable("IDP_ENDPOINT", required=True) + '/token',
+    'authorize_url': get_env_variable("IDP_ENDPOINT", required=True) + '/auth',
+    'api_base_url': get_env_variable("IDP_ENDPOINT", required=True),
+    'client_kwargs':{
+        'scope': 'openid email profile',
+    }
+}
+
+app_secret = get_env_variable('SESSION_KEY')

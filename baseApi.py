@@ -6,10 +6,13 @@ AARC3-WP4-Policy-Registration-API is distributed in the hope that it will be use
 You should have received a copy of the GNU General Public License along with AARC3-WP4-Policy-Registration-API. If not, see <https://www.gnu.org/licenses/>. 
 '''
 import json
+import requests
 from mysql.connector import pooling
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, url_for, session, redirect
 from rfc3986 import validators, uri_reference
-from util import get_logger, db_config
+from authlib.integrations.flask_oauth2 import ResourceProtector, current_token
+from authlib.integrations.flask_client import OAuth
+from util import get_logger, db_config, CustomIntrospectTokenValidator, idp_config, app_secret
 
 connection_pool = pooling.MySQLConnectionPool(
     pool_name="mypool", pool_size=4, **db_config
@@ -17,11 +20,17 @@ connection_pool = pooling.MySQLConnectionPool(
 
 
 app = Flask(__name__)
+app.secret_key = app_secret
 
 logger = get_logger(__name__)
 
+require_oauth = ResourceProtector()
+require_oauth.register_token_validator(CustomIntrospectTokenValidator())
 
-@app.route("/", methods=["GET", "POST"])
+oauth = OAuth(app)
+oauth.register(**idp_config)
+
+@app.route("/", methods=["GET"])
 def home():
     logger.info("Someone accessed the landing page")
     return "Hi, this is just a landing page"
@@ -130,9 +139,44 @@ def getPolicy(policy: str):
 @app.route("/addPolicy/<string:policy>", methods=["POST"])
 def addPolicy(policy: str):
 
+    auth_header = request.headers.get('Authorization', '')
+
+    if auth_header.startswith('Bearer '):
+        try:
+            token = require_oauth['policy'](request)
+            return jsonify({
+                'message' : f'Access granted via token. Policy {policy} added',
+                'user': token.get('sub')
+            })
+        
+        except Exception as e:
+            logger.error(f'Error on access: {e}')
+            return jsonify({'error': 'Invalid token or insufficient scope.'}), 403
+    
+    session['next_policy'] = policy
+    redirect_uri = url_for('authCallback', _external=True)
+    logger.info(f'redirecting:{redirect_uri}')
+    return oauth.idp.authorize_redirect(redirect_uri)
+
     data = "Attempt to add "
     return jsonify({"data": data + policy})
 
+
+@app.route('/auth/callback')
+def authCallback():
+    logger.info(f'Arrived back')
+    token = oauth.idp.authorize_access_token()
+    user_info = oauth.idp.get('userinfo').json()
+
+    session['user'] = user_info
+    session['token'] = token
+
+    policy = session.pop('next_policy', None)
+
+    if policy:
+        return redirect(url_for('addPolicy', policy=policy))
+    logger.error('No policy after token redirect')
+    return redirect(url_for('home'))
 
 def policyValidation(policy: str):
     validator = validators.Validator().allow_schemes('http','https','urn').check_validity_of('scheme','path').require_presence_of('scheme')
