@@ -6,13 +6,13 @@ AARC3-WP4-Policy-Registration-API is distributed in the hope that it will be use
 You should have received a copy of the GNU General Public License along with AARC3-WP4-Policy-Registration-API. If not, see <https://www.gnu.org/licenses/>. 
 '''
 import json
-import requests
+import os
 from mysql.connector import pooling
 from flask import Flask, jsonify, request, url_for, session, redirect
 from rfc3986 import validators, uri_reference
-from authlib.integrations.flask_oauth2 import ResourceProtector, current_token
+#from authlib.integrations.flask_oauth2 import ResourceProtector, current_token
 from authlib.integrations.flask_client import OAuth
-from util import get_logger, db_config, CustomIntrospectTokenValidator, idp_config, app_secret
+from util import get_logger, db_config, CustomIntrospectTokenValidator, idp_config, app_secret, OAuthCache
 
 connection_pool = pooling.MySQLConnectionPool(
     pool_name="mypool", pool_size=4, **db_config
@@ -21,14 +21,31 @@ connection_pool = pooling.MySQLConnectionPool(
 
 app = Flask(__name__)
 app.secret_key = app_secret
+app.config['IDP_CLIENT_ID']=os.getenv('IDP_ID')
+app.config['IDP_CLIENT_SECRET']=os.getenv('IDP_SECRET')
 
 logger = get_logger(__name__)
 
-require_oauth = ResourceProtector()
-require_oauth.register_token_validator(CustomIntrospectTokenValidator())
+cache = OAuthCache(app=app)
 
-oauth = OAuth(app)
-oauth.register(**idp_config)
+oauth = OAuth(app, cache=cache)
+oauth.register(
+    name = 'idp',
+    server_metadata_url = 'https://auth.cern.ch/auth/realms/cern/.well-known/openid-configuration',
+    client_kwargs ={'scope': 'openid profile email'}
+)
+
+@app.route('/login')
+def login():
+    redirect_uri = url_for('authorize', _external=True)
+    return oauth.idp.authorize_redirect(redirect_uri)
+
+@app.route('/authorize')
+def authorize():
+    token = oauth.idp.authorize_access_token()
+    logger.info(f'received token: {token}')
+    return token 
+
 
 @app.route("/", methods=["GET"])
 def home():
@@ -136,8 +153,8 @@ def getPolicy(policy: str):
         return jsonify({"Not a valid policy": policy})
 
 
-@app.route("/addPolicy/<string:policy>", methods=["POST"])
-def addPolicy(policy: str):
+@app.route("/addPolicy", methods=["POST"])
+def addPolicy():
 
     auth_header = request.headers.get('Authorization', '')
 
@@ -145,7 +162,7 @@ def addPolicy(policy: str):
         try:
             token = require_oauth['policy'](request)
             return jsonify({
-                'message' : f'Access granted via token. Policy {policy} added',
+                'message' : f'Access granted via token. Policy {request.get_data()}added',
                 'user': token.get('sub')
             })
         
@@ -153,30 +170,30 @@ def addPolicy(policy: str):
             logger.error(f'Error on access: {e}')
             return jsonify({'error': 'Invalid token or insufficient scope.'}), 403
     
-    session['next_policy'] = policy
+    
     redirect_uri = url_for('authCallback', _external=True)
     logger.info(f'redirecting:{redirect_uri}')
+    logger.info(f'Before redirect query string: {request.query_string}')
+    logger.info(f'Before redirect args{request.args.to_dict(flat=False)}')
+    logger.info(f'Before redirect query params: {request.args}')
     return oauth.idp.authorize_redirect(redirect_uri)
-
-    data = "Attempt to add "
-    return jsonify({"data": data + policy})
 
 
 @app.route('/auth/callback')
 def authCallback():
-    logger.info(f'Arrived back')
+    logger.info(f'Arrived back with url: {request.url}')
+    logger.info(f'Query params: {request.args}')
+    logger.info(f'Headers: {request.headers}')
+    logger.info(f'After redirect query string: {request.query_string}')
+    logger.info(f'After redirect args{request.args.to_dict(flat=False)}')
+    
     token = oauth.idp.authorize_access_token()
     user_info = oauth.idp.get('userinfo').json()
 
     session['user'] = user_info
     session['token'] = token
 
-    policy = session.pop('next_policy', None)
-
-    if policy:
-        return redirect(url_for('addPolicy', policy=policy))
-    logger.error('No policy after token redirect')
-    return redirect(url_for('home'))
+    return redirect(url_for('addPolicy'))
 
 def policyValidation(policy: str):
     validator = validators.Validator().allow_schemes('http','https','urn').check_validity_of('scheme','path').require_presence_of('scheme')

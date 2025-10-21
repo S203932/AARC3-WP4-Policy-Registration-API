@@ -8,6 +8,7 @@ You should have received a copy of the GNU General Public License along with AAR
 import logging
 import os
 import requests
+from flask import Flask
 from dotenv import load_dotenv
 from authlib.oauth2.rfc7662 import IntrospectTokenValidator
 
@@ -29,15 +30,49 @@ def get_env_variable(name, default=None, required=False):
         )
     return value
 
+realm_url = get_env_variable("IDP_REALM_URL", required=True)
+
 class CustomIntrospectTokenValidator(IntrospectTokenValidator):
     """The following class is taken from the documentation: https://docs.authlib.org/en/latest/specs/rfc7662.html#use-introspection-in-resource-server"""
     def introspect_token(self,token_string):
-        url = get_env_variable("IDP_ENDPOINT", required=True) + '/token/introspect'
+        url = f'{realm_url}/protocol/openid-connect/token/introspect'
         data = {'token': token_string, 'token_type_hint': 'access_token'}
         auth = (get_env_variable("IDP_ID", required=True), get_env_variable("IDP_SECRET", required=True))
         resp = requests.post(url, data=data, auth=auth)
         resp.raise_for_status()
         return resp.json()
+
+from flask import Flask
+
+class OAuthCache:
+
+    def __init__(self, app: Flask) -> None:
+        """Initialize the AuthCache."""
+        self.app = app
+
+    def delete(self, key: str) -> None:
+        """
+        Delete a cache entry.
+
+        :param key: Unique identifier for the cache entry.
+        """
+
+    def get(self, key: str) -> str | None:
+        """
+        Retrieve a value from the cache.
+
+        :param key: Unique identifier for the cache entry.
+        :return: Retrieved value or None if not found or expired.
+        """
+
+    def set(self, key: str, value: str, expires: int | None = None) -> None:
+        """
+        Set a value in the cache with optional expiration.
+
+        :param key: Unique identifier for the cache entry.
+        :param value: Value to be stored.
+        :param expires: Expiration time in seconds. Defaults to None (no expiration).
+        """
 
 load_dotenv()
 
@@ -55,12 +90,24 @@ idp_config = {
     'name':'idp',
     'client_id': get_env_variable("IDP_ID", required=True),
     'client_secret':get_env_variable("IDP_SECRET", required=True),
-    'access_token_url':get_env_variable("IDP_ENDPOINT", required=True) + '/token',
-    'authorize_url': get_env_variable("IDP_ENDPOINT", required=True) + '/auth',
-    'api_base_url': get_env_variable("IDP_ENDPOINT", required=True),
+    'access_token_url':f'{realm_url}/protocol/openid-connect/token',
+    'authorize_url': f'{realm_url}/protocol/openid-connect/auth',
+    'api_base_url': f'{realm_url}/protocol/openid-connect',
     'client_kwargs':{
-        'scope': 'openid email profile',
+        #'scope': 'openid email profile',
     }
 }
 
-app_secret = get_env_variable('SESSION_KEY')
+
+
+""" idp_config = {
+    'name':'idp',
+    'client_id': get_env_variable("IDP_ID", required=True),
+    'client_secret':get_env_variable("IDP_SECRET", required=True),
+    'server_metadata_url':'https://auth.cern.ch/auth/realms/cern/.well-known/openid-configuration',
+    'client_kwargs':{
+        'scope': 'openid profile email',
+    }
+} """
+
+app_secret = get_env_variable('SESSION_KEY', required=True)
