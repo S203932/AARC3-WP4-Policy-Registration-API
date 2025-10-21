@@ -12,6 +12,8 @@ from flask import Flask
 from dotenv import load_dotenv
 from authlib.oauth2.rfc7662 import IntrospectTokenValidator
 
+logger = get_logger(__name__)
+
 def get_logger(name:str):
     logger = logging.getLogger(name)
     handler = logging.StreamHandler()
@@ -41,8 +43,6 @@ class CustomIntrospectTokenValidator(IntrospectTokenValidator):
         resp = requests.post(url, data=data, auth=auth)
         resp.raise_for_status()
         return resp.json()
-
-from flask import Flask
 
 class OAuthCache:
 
@@ -75,8 +75,6 @@ class OAuthCache:
         """
 
 load_dotenv()
-
-logger = get_logger(__name__)
 
 db_config = {
     "host": get_env_variable("DB_HOST", required=True),
