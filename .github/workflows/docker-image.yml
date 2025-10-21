@@ -19,7 +19,7 @@ jobs:
       API_HOST: api-test.test-net
       IMAGE_NAME: ghcr.io/${{ github.repository }}
       IMAGE_TAG: base-implementation
-      IDP_ENDPOINT: PLACE_HOLDER
+      IDP_REALM_URL: PLACE_HOLDER
       IDP_ID: PLACE_HOLDER
       IDP_SECRET: PLACE_HOLDER
       SESSION_KEY: PLACE_HOLDER
@@ -93,7 +93,7 @@ jobs:
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
             -e APP_URL=http://$API_HOST:8080 \
-            -e IDP_ENDPOINT=$IDP_ENDPOINT \
+            -e IDP_REALM_URL=$IDP_ENDPOINT \
             -e IDP_ID=$IDP_ID \
             -e IDP_SECRET=$IDP_SECRET \
             -e SESSION_KEY=$SESSION_KEY \
