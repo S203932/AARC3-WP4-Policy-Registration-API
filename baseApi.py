@@ -9,11 +9,17 @@ You should have received a copy of the GNU General Public License along with AAR
 import json
 import connexion
 from mysql.connector import pooling
-from util import get_logger, db_config, CustomIntrospectTokenValidator, app_base, load_api_spec
+from util import (
+    get_logger,
+    db_config,
+    CustomIntrospectTokenValidator,
+    app_base,
+    load_api_spec,
+)
 from rfc3986 import validators, uri_reference
 from connexion.exceptions import OAuthProblem, Unauthorized, Forbidden
 
-from flask import jsonify, request
+from flask import jsonify, request, Response
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Logging
@@ -37,7 +43,9 @@ tokenValidator = CustomIntrospectTokenValidator()
 def home():
     """Landing page"""
     logger.info("Someone accessed the landing page")
-    return "Hi, this is just a landing page", 200
+    return Response(
+        "Hi, this is just a landing page", status=200, mimetype="text/plain"
+    )
 
 
 def getPolicies():
