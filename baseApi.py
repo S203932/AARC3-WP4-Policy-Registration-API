@@ -1,60 +1,47 @@
-'''
+"""
 Copyright (c) European Organization for Nuclear Research (CERN). 2025
 This file is part of AARC3-WP4-Policy-Registration-API.
 AARC3-WP4-Policy-Registration-API is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 AARC3-WP4-Policy-Registration-API is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with AARC3-WP4-Policy-Registration-API. If not, see <https://www.gnu.org/licenses/>. 
-'''
-import json
-import os
-from mysql.connector import pooling
-from flask import Flask, jsonify, request, url_for, session, redirect
-from rfc3986 import validators, uri_reference
-#from authlib.integrations.flask_oauth2 import ResourceProtector, current_token
-from authlib.integrations.flask_client import OAuth
-from util import get_logger, db_config, CustomIntrospectTokenValidator, idp_config, app_secret, OAuthCache
+You should have received a copy of the GNU General Public License along with AARC3-WP4-Policy-Registration-API. If not, see <https://www.gnu.org/licenses/>.
+"""
 
+import json
+import connexion
+from mysql.connector import pooling
+from util import get_logger, db_config, CustomIntrospectTokenValidator, app_base, load_api_spec
+from rfc3986 import validators, uri_reference
+from connexion.exceptions import OAuthProblem, Unauthorized, Forbidden
+
+from flask import jsonify, request
+from werkzeug.middleware.proxy_fix import ProxyFix
+
+# Logging
+logger = get_logger(__name__)
+
+
+# Database connection
 connection_pool = pooling.MySQLConnectionPool(
     pool_name="mypool", pool_size=4, **db_config
 )
 
-
-app = Flask(__name__)
-app.secret_key = app_secret
-app.config['IDP_CLIENT_ID']=os.getenv('IDP_ID')
-app.config['IDP_CLIENT_SECRET']=os.getenv('IDP_SECRET')
-
-logger = get_logger(__name__)
-
-cache = OAuthCache(app=app)
-
-oauth = OAuth(app, cache=cache)
-oauth.register(
-    name = 'idp',
-    server_metadata_url = 'https://auth.cern.ch/auth/realms/cern/.well-known/openid-configuration',
-    client_kwargs ={'scope': 'openid profile email'}
-)
-
-@app.route('/login')
-def login():
-    redirect_uri = url_for('authorize', _external=True)
-    return oauth.idp.authorize_redirect(redirect_uri)
-
-@app.route('/authorize')
-def authorize():
-    token = oauth.idp.authorize_access_token()
-    logger.info(f'received token: {token}')
-    return token 
+# Introspection
+tokenValidator = CustomIntrospectTokenValidator()
 
 
-@app.route("/", methods=["GET"])
+## Commented out for testing
+# app.config['SERVER_NAME'] = app_base
+# app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+
 def home():
+    """Landing page"""
     logger.info("Someone accessed the landing page")
-    return "Hi, this is just a landing page"
+    return "Hi, this is just a landing page", 200
 
 
-@app.route("/getPolicies", methods=["GET"])
 def getPolicies():
+    """List all policy entries"""
     logger.info("A call to getPolicies was made")
     conn = connection_pool.get_connection()
     cursor = conn.cursor(dictionary=True)
@@ -62,12 +49,12 @@ def getPolicies():
     response = cursor.fetchall()
     conn.close()
     logger.info("The call to getPolicies was succesfull")
-    return jsonify({"policies": response})
+    return jsonify({"policies": response}), 200
 
 
-@app.route("/getPolicy/<path:policy>", methods=["GET"])
 def getPolicy(policy: str):
-    logger.info(f'A call to the getPolicy was made with policy:{policy}')
+    """Retrieve all information regarding a single policy"""
+    logger.info(f"A call to the getPolicy was made with policy:{policy}")
     if policyValidation(policy):
 
         conn = connection_pool.get_connection()
@@ -122,11 +109,13 @@ def getPolicy(policy: str):
         LEFT JOIN authorities auth ON p.auth_id = auth.auth_id
         LEFT JOIN auth_lang_agg auth_lan ON p.auth_id = auth_lan.auth_id
         WHERE p.id = %s
-        """,(policy,))
+        """,
+            (policy,),
+        )
         response = cursor.fetchone()
         conn.close()
         if response is None:
-            return jsonify({"Not a policy id in db": policy})
+            return jsonify({"Not a policy id in db": policy}), 404
 
         # Converting to json list if not None type
         if response["contacts"] is not None:
@@ -140,72 +129,71 @@ def getPolicy(policy: str):
                 response["augment_policy_uris"]
             )
         if response["auth_languages"] is not None:
-            response["auth_languages"] = json.loads(
-                response["auth_languages"]
-            )
+            response["auth_languages"] = json.loads(response["auth_languages"])
         if response["description_languages"] is not None:
             response["description_languages"] = json.loads(
                 response["description_languages"]
             )
-        logger.info(f'The call to getPolicy was succesful:{response}')
-        return jsonify({"policy": response})
+        logger.info(f"The call to getPolicy was succesful:{response}")
+        return jsonify({"policy": response}), 200
     else:
-        return jsonify({"Not a valid policy": policy})
+        return jsonify({"Not a valid policy": policy}), 400
 
 
-@app.route("/addPolicy", methods=["POST"])
 def addPolicy():
+    """Add a new policy (requires OAuth2 token with scope openid for now)"""
+    data = request.get_json()
+    logger.info(f"Received data: {data}")
 
-    auth_header = request.headers.get('Authorization', '')
+    return jsonify({"Success": "True", "received": data}), 200
 
-    if auth_header.startswith('Bearer '):
-        try:
-            token = require_oauth['policy'](request)
-            return jsonify({
-                'message' : f'Access granted via token. Policy {request.get_data()}added',
-                'user': token.get('sub')
-            })
-        
-        except Exception as e:
-            logger.error(f'Error on access: {e}')
-            return jsonify({'error': 'Invalid token or insufficient scope.'}), 403
-    
-    
-    redirect_uri = url_for('authCallback', _external=True)
-    logger.info(f'redirecting:{redirect_uri}')
-    logger.info(f'Before redirect query string: {request.query_string}')
-    logger.info(f'Before redirect args{request.args.to_dict(flat=False)}')
-    logger.info(f'Before redirect query params: {request.args}')
-    return oauth.idp.authorize_redirect(redirect_uri)
-
-
-@app.route('/auth/callback')
-def authCallback():
-    logger.info(f'Arrived back with url: {request.url}')
-    logger.info(f'Query params: {request.args}')
-    logger.info(f'Headers: {request.headers}')
-    logger.info(f'After redirect query string: {request.query_string}')
-    logger.info(f'After redirect args{request.args.to_dict(flat=False)}')
-    
-    token = oauth.idp.authorize_access_token()
-    user_info = oauth.idp.get('userinfo').json()
-
-    session['user'] = user_info
-    session['token'] = token
-
-    return redirect(url_for('addPolicy'))
 
 def policyValidation(policy: str):
-    validator = validators.Validator().allow_schemes('http','https','urn').check_validity_of('scheme','path').require_presence_of('scheme')
+    validator = (
+        validators.Validator()
+        .allow_schemes("http", "https", "urn")
+        .check_validity_of("scheme", "path")
+        .require_presence_of("scheme")
+    )
     uri = uri_reference(policy)
     try:
         validator.validate(uri)
         return True
     except:
-        logger.error(f'Invalid policy uri: {policy}')
-        return False    
+        logger.error(f"Invalid policy uri: {policy}")
+        return False
 
 
-# If to be run with python - uncomment
-#if __name__ == "__main__":
-#   app.run(debug=False, host='0.0.0.0', port=8080)
+def introspectToken(token, required_scopes=None, request=None):
+    """
+    Connexion x-tokenInfoFunc
+    Returns a dictionary with token info if valid, returns Unauthorized or Forbidden if invalid
+    """
+    try:
+        logger.info(f"Token:{token}")
+        info = tokenValidator.introspect_token(token)
+        logger.info(f"Token info:{info}")
+
+        if not tokenValidator.validate_aud(info):
+            raise Forbidden("Wrong audiance")
+
+        if not tokenValidator.validate_claim(token):
+            raise Forbidden("Missing required roles")
+
+        if not info.get("active", False):
+            raise Unauthorized("Inactive token")
+
+        if required_scopes:
+            token_scopes = info.get("scope", "").split()
+            if not set(required_scopes).issubset(token_scopes):
+                raise Forbidden("Missing required scopes")
+
+        return info
+    except Exception as e:
+        logger.error(f"Token introspection failed: {e}")
+        raise
+
+
+app = connexion.FlaskApp(__name__, specification_dir="./")
+spec = load_api_spec()
+app.add_api(specification=spec, strict_validation=True)

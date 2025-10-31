@@ -1,0 +1,122 @@
+openapi: 3.0.3
+info:
+  title: AARC3-WP4 Policy Registration API
+  version: 1.0.0
+
+paths:
+  /:
+    get:
+      summary: Landing page
+      operationId: baseApi.home
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /getPolicies:
+    get:
+      summary: List all policy entries
+      operationId: baseApi.getPolicies
+      responses:
+        "200":
+          description: Policy list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  policies:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        informational_url:
+                          type: string
+
+  /getPolicy/{policy}:
+    get:
+      summary: Retrieve all information regarding a single policy
+      operationId: baseApi.getPolicy
+      parameters:
+        - in: path
+          name: policy
+          required: true
+          schema:
+            type: string
+            format: path
+      responses:
+        "200":
+          description: Detailed policy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  policy:
+                    type: object
+        "404":
+          description: Not found
+
+  /addPolicy:
+    post:
+      summary: Add a new policy (requires OAuth2 token)
+      operationId: baseApi.addPolicy
+      security:
+        - oauth2: [openid]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                policy_url:
+                  type: string
+                ttl:
+                  type: integer
+                policy_class:
+                  type: string
+              required:
+                - policy_url
+                - policy_class
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      x-tokenInfoFunc: baseApi.introspectToken
+      flows:
+        implicit:
+          authorizationUrl: ${IDP_AUTHORIZATION_ENDPOINT}
+          scopes:
+            openid: OpenID Connect
+            email: Access to email address
+            profile: Access to user profile
+        authorizationCode:
+          authorizationUrl: ${IDP_AUTHORIZATION_ENDPOINT}
+          tokenUrl: ${IDP_TOKEN_ENDPOINT}
+          scopes:
+            openid: OpenID Connect
+            email: Access to email address
+            profile: Access to user profile
+        

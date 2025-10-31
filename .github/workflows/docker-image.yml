@@ -16,13 +16,19 @@ jobs:
       DB_PASSWORD: testpass
       DB_PORT: 3306
       DB_NAME: testdb
-      API_HOST: api-test.test-net
-      IMAGE_NAME: ghcr.io/${{ github.repository }}
-      IMAGE_TAG: base-implementation
-      IDP_REALM_URL: PLACE_HOLDER
+
+      APP_URL: http://api-test.test-net:8080
+      APP_BASE: PLACE_HOLDER
+      CLAIM_PATH: PLACE_HOLDER
       IDP_ID: PLACE_HOLDER
       IDP_SECRET: PLACE_HOLDER
-      SESSION_KEY: PLACE_HOLDER
+      IDP_AUTHORIZATION_ENDPOINT: PLACE_HOLDER
+      IDP_TOKEN_ENDPOINT: PLACE_HOLDER
+      IDP_INTROSPECTION_ENDPOINT: PLACE_HOLDER
+
+
+      IMAGE_NAME: ghcr.io/${{ github.repository }}
+      IMAGE_TAG: base-implementation
 
     steps:
       # Necessary as I need to convert the image name to lower case, cause linux reasons
@@ -92,11 +98,14 @@ jobs:
             -e DB_PASSWORD=$DB_PASSWORD \
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
-            -e APP_URL=http://$API_HOST:8080 \
-            -e IDP_REALM_URL=$IDP_ENDPOINT \
+            -e APP_URL=$APP_URL \
+            -e APP_BASE=$APP_BASE \
+            -e CLAIM_PATH=$CLAIM_PATH \
             -e IDP_ID=$IDP_ID \
             -e IDP_SECRET=$IDP_SECRET \
-            -e SESSION_KEY=$SESSION_KEY \
+            -e IDP_AUTHORIZATION_ENDPOINT=$IDP_AUTHORIZATION_ENDPOINT \
+            -e IDP_INTROSPECTION_ENDPOINT=$IDP_INTROSPECTION_ENDPOINT \
+            -e IDP_TOKEN_ENDPOINT=$IDP_TOKEN_ENDPOINT \
             $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG \
 
       # For testing purposes mainly, the container network has been in question during testing
@@ -109,7 +118,7 @@ jobs:
         run: |
           for i in {1..5}; do
             if docker run --rm --network test-net curlimages/curl:latest \
-                curl -s --fail $API_HOST:8080/; then
+                curl -s --fail $APP_URL; then
               echo -e "/nAPI is ready"
               exit 0
             fi
@@ -145,7 +154,7 @@ jobs:
             -e DB_PASSWORD=$DB_PASSWORD \
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
-            -e APP_URL=http://$API_HOST:8080 \
+            -e APP_URL=APP_URL \
             test-runner
 
       # Stopping the app container, cause we are nice

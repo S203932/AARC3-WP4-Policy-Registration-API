@@ -14,6 +14,7 @@ COPY baseApi.py .
 COPY dbInit.py .
 COPY tests/db_test.py .
 COPY util.py .
+COPY openapi.yaml .
 
 # Copying the test data
 COPY initializationDB.sql .
@@ -22,4 +23,4 @@ COPY initializationDB.sql .
 EXPOSE 8080
 
 # Running the Python script
-CMD python dbInit.py && gunicorn -w 4 -b 0.0.0.0:8080 baseApi:app
+CMD python dbInit.py && gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8080 baseApi:app
