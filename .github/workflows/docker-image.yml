@@ -154,7 +154,7 @@ jobs:
             -e DB_PASSWORD=$DB_PASSWORD \
             -e DB_PORT=$DB_PORT \
             -e DB_NAME=$DB_NAME \
-            -e APP_URL=APP_URL \
+            -e APP_URL=$APP_URL \
             test-runner
 
       # Stopping the app container, cause we are nice
