@@ -81,3 +81,8 @@ def testGetPolicyThe():
     response = requests.get(baseUrl + '/getPolicy/urn:idk:123456')
 
     assert response.text == thePolicy    
+
+def failTest():
+    # A test meant to fail, such that I can commit the current work without fear that it goes into production
+
+    assert True == False 

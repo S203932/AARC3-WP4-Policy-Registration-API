@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -15,6 +15,7 @@ COPY dbInit.py .
 COPY tests/db_test.py .
 COPY util.py .
 COPY openapi.yaml .
+COPY policy_entry /app/policy_entry
 
 # Copying the test data
 COPY initializationDB.sql .

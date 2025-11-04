@@ -8,7 +8,7 @@ You should have received a copy of the GNU General Public License along with AAR
 
 import json
 import connexion
-from mysql.connector import pooling
+from mysql.connector import pooling, errors
 from util import (
     get_logger,
     db_config,
@@ -18,6 +18,7 @@ from util import (
 )
 from rfc3986 import validators, uri_reference
 from connexion.exceptions import OAuthProblem, Unauthorized, Forbidden
+from policy_entry.policy.policy import Policy
 
 from flask import jsonify, request, Response
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -153,6 +154,11 @@ def addPolicy():
     data = request.get_json()
     logger.info(f"Received data: {data}")
 
+    policy = Policy.from_dict(data)
+
+    insertPolicy(policy)
+
+
     return jsonify({"Success": "True", "received": data}), 200
 
 
@@ -200,6 +206,140 @@ def introspectToken(token, required_scopes=None, request=None):
     except Exception as e:
         logger.error(f"Token introspection failed: {e}")
         raise
+    
+def sql_value(value):
+    if value is None:
+        return "NULL"
+    if isinstance(value, str):
+        return f'"{value}"'
+    return value
+
+def insertPolicy(policy:Policy):
+
+    
+    logger.info(f'aut: {policy.authority.aut}')
+    authority = f'INSERT INTO authorities(uri) VALUES ("{policy.authority.aut}") '
+    authorityId = f'SELECT auth_id FROM authorities WHERE uri = "{policy.authority.aut}"'
+
+
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True, buffered=True)
+
+    # Inserting the authority
+    try:
+        logger.info(f'authority: {authority}')
+        cursor.execute(authority)
+        logger.info(f"Following command succeded:{authority[:30]}")
+    except errors.IntegrityError as err:
+        logger.error(f"Failed duplicate command: {authority[:30]}")
+
+
+    # Getting the id from the authority table
+    cursor.execute(authorityId)
+    auth_id = cursor.fetchone()
+
+    logger.info(f'Managed to get auth_id: {auth_id}')
+    logger.info(f'The type: {type(auth_id)}')
+
+    # Inserting authority names
+    for auth in policy.authority.names:
+        tempLang = f'INSERT INTO authority_names(auth_id, language, auth_name) VALUES ({auth_id.get("auth_id")}, "{auth.language}", "{auth.aut_name}");'
+        logger.info(f'authorityNames: {tempLang}')
+        try:
+            cursor.execute(tempLang)
+            logger.info(f"Following command succeded:{tempLang[:30]}")
+        except errors.IntegrityError as err:
+            logger.error(f"Failed duplicate command: {tempLang[:30]}")
+
+
+    # Inserting into policy entry
+    try: 
+        policyEntry = f'INSERT INTO policy_entries(id, name, informational_url, owner) VALUES ("{policy.policyId}", "WOOw it worked", "something for later", "You are not even seeing this");'
+        logger.info(f'Policy: {policyEntry}')
+        logger.info(f"Following command succeded:{policyEntry[:30]}")
+        cursor.execute(policyEntry)
+    except errors.IntegrityError as err:
+        logger.error(f"Failed duplicate command: {policyEntry[:30]}")
+
+
+    # Inserting the policy
+    try:
+        policyInsert = (
+            f'INSERT INTO policy('
+            f'id, policy_url, auth_id, valid_from, ttl, policy_class, notice_refresh_period'
+            f') VALUES ('
+            f'{sql_value(policy.policyId)}, '
+            f'{sql_value(policy.policy_url)}, '
+            f'{sql_value(auth_id.get("auth_id"))}, '
+            f'{sql_value(policy.valid_from)}, '
+            f'{sql_value(policy.ttl)}, '
+            f'{sql_value(policy.policy_class)}, '
+            f'{sql_value(policy.notice_refresh_period)}'
+            f');'
+        ) 
+        logger.info(f'Policy: {policyInsert}')
+        cursor.execute(policyInsert)
+        logger.info(f"Following command succeded:{policyInsert[:30]}")
+    except errors.IntegrityError as err:
+        logger.error(f"Failed duplicate command: {policyInsert[:30]}")
+
+
+    # Inserting the descriptions
+    for description in policy.descriptions:
+        tempDesc = f'INSERT INTO descriptions(id, description, language) VALUES ("{policy.policyId}", "{description.description}", "{description.language}");'
+        logger.info(f'description: {tempDesc}')
+        try:
+            cursor.execute(tempDesc)
+            logger.info(f"Following command succeded:{tempDesc[:30]}")
+        except errors.IntegrityError as err:
+            logger.error(f"Failed duplicate command: {tempDesc[:30]}")
+
+    # Inserting the jurisdiction
+    if policy.policy_jurisdiction is not None:
+        tempJur = f'INSERT INTO privacy_policies(id, jurisdiction) VALUES ("{policy.policyId}", "{policy.policy_jurisdiction}");'
+        logger.info(f'Jurisdiction: {tempJur}')
+        try:
+            cursor.execute(tempJur)
+            logger.info(f"Following command succeded:{tempJur[:30]}")
+        except errors.IntegrityError as err:
+            logger.error(f"Failed duplicate command: {tempJur[:30]}")
+
+
+    # Inserting the contacts 
+    for contact in policy.contacts:
+        tempCon = f'INSERT INTO contacts(type, email, id) VALUES ("{contact.contact_type}", "{contact.email}", "{policy.policyId}");'
+        logger.info(f'contact: {tempCon}')
+        try:
+            cursor.execute(tempCon)
+            logger.info(f"Following command succeded:{tempCon[:30]}")
+        except errors.IntegrityError as err:
+            logger.error(f"Failed duplicate command: {tempCon[:30]}")
+
+    # Inserting the implicit policies
+    if policy.implicit_policy_uris is not None:
+        for implicit in policy.implicit_policy_uris:
+            tempImpl = f'INSERT INTO implicit_policy_uris(id, implicit_uri) VALUES ("{policy.policyId}", "{implicit}");'
+            logger.info(f'implicit: {tempImpl}')
+            try:
+                cursor.execute(tempImpl)
+                logger.info(f"Following command succeded:{tempImpl[:30]}")
+            except errors.IntegrityError as err:
+                logger.error(f"Failed duplicate command: {tempImpl[:30]}")
+
+
+    # Inserting the augment policies
+    if policy.augment_policy_uris is not None:
+        for augment in policy.augment_policy_uris:
+            tempAugm = f'INSERT INTO augment_policy_uris(id, augment_uri) VALUES ("{policy.policyId}", "{augment}");'
+            logger.info(f'Augment: {tempAugm}')
+            try:
+                cursor.execute(tempAugm)
+                logger.info(f"Following command succeded:{tempAugm[:30]}")
+            except errors.IntegrityError as err:
+                logger.error(f"Failed duplicate command: {tempAugm[:30]}")
+
+    conn.commit()
+    conn.close()
 
 
 app = connexion.FlaskApp(__name__, specification_dir="./")

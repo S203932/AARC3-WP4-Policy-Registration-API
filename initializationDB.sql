@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS policy_entries (
 CREATE TABLE IF NOT EXISTS `authorities` (
   `auth_id` int NOT NULL AUTO_INCREMENT,
   `uri` VARCHAR(256) DEFAULT NULL,
-  PRIMARY KEY (`auth_id`)
+  PRIMARY KEY (`auth_id`),
+  UNIQUE KEY `uri` (`uri`)
 );
 
 CREATE TABLE IF NOT EXISTS `authority_names` (
