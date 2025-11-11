@@ -53,7 +53,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG .
+          docker build -t $IMAGE_NAME_LOWER/policy-registry:$IMAGE_TAG .
 
       # Need to have the api and mysql containers on the same network
       - name: Create Docker network
@@ -106,7 +106,7 @@ jobs:
             -e IDP_AUTHORIZATION_ENDPOINT=$IDP_AUTHORIZATION_ENDPOINT \
             -e IDP_INTROSPECTION_ENDPOINT=$IDP_INTROSPECTION_ENDPOINT \
             -e IDP_TOKEN_ENDPOINT=$IDP_TOKEN_ENDPOINT \
-            $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG \
+            $IMAGE_NAME_LOWER/policy-registry:$IMAGE_TAG \
 
       # For testing purposes mainly, the container network has been in question during testing
       - name: Log to see if both containers are on the network
