@@ -129,8 +129,10 @@ paths:
                     properties:
                       description:
                         type: string
+                        description: description of the policy
                       language:
-                        type: Language code (e.g. fr_FR)
+                        type: string
+                        description: Language code (e.g. fr_FR)
                 id:
                   type: string
                   format: uri
