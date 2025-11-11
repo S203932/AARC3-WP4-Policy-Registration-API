@@ -181,4 +181,4 @@ jobs:
       # Celebrating a completed run with a new docker image
       - name: Push Docker image
         run: |
-          docker push $IMAGE_NAME_LOWER/myapp:$IMAGE_TAG
+          docker push $IMAGE_NAME_LOWER/policy-registry:$IMAGE_TAG
