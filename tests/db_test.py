@@ -82,7 +82,7 @@ def testGetPolicyThe():
 
     assert response.text == thePolicy    
 
-def testFail():
+""" def testFail():
     # A test meant to fail, such that I can commit the current work without fear that it goes into production
 
-    assert True == False 
+    assert True == False  """

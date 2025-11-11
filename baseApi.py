@@ -8,6 +8,7 @@ You should have received a copy of the GNU General Public License along with AAR
 
 import json
 import connexion
+import urllib.parse
 from mysql.connector import pooling, errors
 from util import (
     get_logger,
@@ -15,6 +16,7 @@ from util import (
     CustomIntrospectTokenValidator,
     app_base,
     load_api_spec,
+    api_base
 )
 from rfc3986 import validators, uri_reference
 from connexion.exceptions import OAuthProblem, Unauthorized, Forbidden
@@ -253,8 +255,9 @@ def insertPolicy(policy:Policy):
 
 
     # Inserting into policy entry
+    informational_url = api_base + "/getPolicy/" + urllib.parse.quote(policy.policyId, safe=' ')
     try: 
-        policyEntry = f'INSERT INTO policy_entries(id, name, informational_url, owner) VALUES ("{policy.policyId}", "WOOw it worked", "something for later", "You are not even seeing this");'
+        policyEntry = f'INSERT INTO policy_entries(id, name, informational_url, owner) VALUES ("{policy.policyId}", "{policy.name}", "{informational_url}", "{policy.owner}");'
         logger.info(f'Policy: {policyEntry}')
         logger.info(f"Following command succeded:{policyEntry[:30]}")
         cursor.execute(policyEntry)

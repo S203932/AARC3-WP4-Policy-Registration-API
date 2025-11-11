@@ -26,6 +26,8 @@ class PolicyTypes(Enum):
 class Policy:
     def __init__(
         self,
+        name: str,
+        owner: str,
         policyId: str,
         policy_class: str,
         authority: Authority,
@@ -41,6 +43,8 @@ class Policy:
     ):
         self.validatePolicyClass(policy_class)
         self.validatePolicyJurisdiction(policy_jurisdiction, policy_class)
+        self.name = name
+        self.owner = owner
         self.policyId = policyId
         self.policy_class = policy_class
         self.authority = authority
@@ -84,16 +88,20 @@ class Policy:
         descriptions = [Description.from_dict(d) for d in descriptions_data]
 
         return cls(
+            name=data["name"],
+            owner=data["owner"],
             policyId=data["id"],
             policy_class=data["policy_class"],
             authority=authority,
             contacts=contacts,
             augment_policy_uris=data.get("augment_policy_uris"),
-            implicit_policy_uris=data.get("implicit_policy_uris"),
+            implicit_policy_uris=data.get("includes_policy_uris"),
             descriptions=descriptions,
             notice_refresh_period=data.get("notice_refresh_period"),
             ttl=data.get("ttl"),
-            policy_jurisdiction=data.get("policy_jurisdiction")
+            policy_jurisdiction=data.get("policy_jurisdiction"),
+            valid_from=data["valid_from"],
+            policy_url=data["policy_url"]
         )
 
     @classmethod

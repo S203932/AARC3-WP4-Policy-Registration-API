@@ -123,4 +123,6 @@ db_config = {
 
 logger = get_logger(__name__)
 
+api_base = get_env_variable("APP_URL")
+
 app_base = get_env_variable("APP_BASE")

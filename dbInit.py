@@ -8,11 +8,9 @@ You should have received a copy of the GNU General Public License along with AAR
 
 import sqlparse
 import mysql.connector
-from util import get_logger, get_env_variable, db_config
+from util import get_logger, api_base, db_config
 
 logger = get_logger(__name__)
-
-api_base = get_env_variable("APP_URL")
 
 
 def init_db():
