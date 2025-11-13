@@ -3,9 +3,13 @@ This is a base implementation of a policy registry API in accordance with AARC-G
 
 # Requirements to run the api
 - A mysql database that has the following structure as seen below.
+- An IDP
 
-## Structure of the aup database
+## Structure of the required database
+The database that will be created when running the api will have the following structure. 
 ![Alt text](API_DB_class.jpg?raw=true "Title")
+
+Within the api is an initialization script of the database that will create the above mentioned tables and populate them with some dummy data. 
 
 # How to run the api
 There are different ways to run the api. True for all of them is that one needs to provide the database information to the api. 
@@ -15,12 +19,24 @@ The database information that needs to be provided are the following:
 - `DB_PASSWORD=the_AARC_User_Password`
 - `DB_PORT=the_AARC_DB_Port`
 - `DB_NAME=name_of_the_database`
-- `APP_URL=base_link_for_the_api`
+
+Furthermore, one needs to provide the following information about where the api is to be hosted:
+- `APP_URL=base_link_for_the_api_with_scheme`
+- `APP_BASE=base_link_for_the_api_without_scheme`
+
+Lastly, one needs to provide the following information about the idp used for authentication to add a policy to the registry:
+
+- IDP_AUTHORIZATION_ENDPOINT=https://somewhere.org/openid-connect/auth
+- IDP_TOKEN_ENDPOINT=https://somewhere.org/openid-connect/token
+- IDP_INTROSPECTION_ENDPOINT=https://somewhere.org/openid-connect/token/introspect
+- CLAIM_PATH=path_to_the_claim_in_token
+- IDP_ID = client_id_for_idp
+- IDP_SECRET = client_secret_for_idp
 
 These are the following ways to run the api.
 
 ## Docker image
-- Pull the newest image from the [Packages](https://github.com/S203932/AARC3-WP4-Policy-Registration-API/pkgs/container/aarc3-wp4-policy-registration-api%2Fmyapp)
+- Pull the newest image from the [Packages](https://github.com/S203932/AARC3-WP4-Policy-Registration-API/pkgs/container/aarc3-wp4-policy-registration-api%2Fpolicy-registry)
 - When deploying the image on kubernetes or your given platform, provide the aformentioned database information.
 
 ## Docker file
