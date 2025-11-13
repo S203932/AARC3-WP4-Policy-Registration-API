@@ -21,6 +21,7 @@ from util import (
 from rfc3986 import validators, uri_reference
 from connexion.exceptions import OAuthProblem, Unauthorized, Forbidden
 from policy_entry.policy.policy import Policy
+from policy_entry.policyEntry import PolicyEntry
 
 from flask import jsonify, request, Response
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -36,11 +37,6 @@ connection_pool = pooling.MySQLConnectionPool(
 
 # Introspection
 tokenValidator = CustomIntrospectTokenValidator()
-
-
-## Commented out for testing
-# app.config['SERVER_NAME'] = app_base
-# app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 
 def home():
@@ -124,6 +120,8 @@ def getPolicy(policy: str):
             (policy,),
         )
         response = cursor.fetchone()
+
+        logger.info(f'Response: {response}')
         conn.close()
         if response is None:
             return jsonify({"Not a policy id in db": policy}), 404
@@ -142,11 +140,16 @@ def getPolicy(policy: str):
         if response["auth_languages"] is not None:
             response["auth_languages"] = json.loads(response["auth_languages"])
         if response["description_languages"] is not None:
-            response["description_languages"] = json.loads(
+            response["descriptions"] = json.loads(
                 response["description_languages"]
             )
-        logger.info(f"The call to getPolicy was succesful:{response}")
-        return jsonify({"policy": response}), 200
+
+        policyObject = Policy.from_dict(response)
+        policyDict = policyObject.to_dict()
+
+
+        logger.info(f"The call to getPolicy was succesful:{policyDict}")
+        return jsonify({"policy": policyDict}), 200
     else:
         return jsonify({"Not a valid policy": policy}), 400
 
@@ -156,9 +159,13 @@ def addPolicy():
     data = request.get_json()
     logger.info(f"Received data: {data}")
 
-    policy = Policy.from_dict(data)
+    policy_raw = data["policy"]
+    policyEntry_raw = data["policy_entry"]
 
-    insertPolicy(policy)
+    policy = Policy.from_dict(policy_raw)
+    policyEntry = PolicyEntry.from_dict(policyEntry_raw)
+
+    insertPolicy(policy, policyEntry)
 
 
     return jsonify({"Success": "True", "received": data}), 200
@@ -216,7 +223,7 @@ def sql_value(value):
         return f'"{value}"'
     return value
 
-def insertPolicy(policy:Policy):
+def insertPolicy(policy:Policy, policyEntry: PolicyEntry):
 
     
     logger.info(f'aut: {policy.authority.aut}')
@@ -257,7 +264,7 @@ def insertPolicy(policy:Policy):
     # Inserting into policy entry
     informational_url = api_base + "/getPolicy/" + urllib.parse.quote(policy.policyId, safe=' ')
     try: 
-        policyEntry = f'INSERT INTO policy_entries(id, name, informational_url, owner) VALUES ("{policy.policyId}", "{policy.name}", "{informational_url}", "{policy.owner}");'
+        policyEntry = f'INSERT INTO policy_entries(id, name, informational_url, owner) VALUES ("{policy.policyId}", "{policyEntry.name}", "{informational_url}", "{policyEntry.owner}");'
         logger.info(f'Policy: {policyEntry}')
         logger.info(f"Following command succeded:{policyEntry[:30]}")
         cursor.execute(policyEntry)

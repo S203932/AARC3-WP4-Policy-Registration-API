@@ -80,107 +80,123 @@ paths:
             schema:
               type: object
               properties:
-                name:
-                  type: string
-                  description: Name of the policy
-                owner:
-                  type: string
-                  format: email
-                  description: Email address of the policy owner
-                augment_policy_uris:
-                  type: array
-                  items:
-                    type: string
-                    format: uri
-                  description: URIs for the policies this policy augments
-                aut:
-                  type: string
-                  format: uri
-                  description: Authority (AUT) URL
-                auth_languages:
-                  type: array
-                  description: Names of the authority and the language the name is in (stand for standard)
-                  items:
-                    type: object
-                    properties:
-                      aut_name:
+                policy_entry:
+                  type: object
+                  description: Minimal policy info
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the policy
+                    owner:
+                      type: string
+                      format: email
+                      description: Email address of the policy owner
+                  required:
+                    - name
+                    - owner
+                policy:
+                  type: object
+                  description: Full policy details
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the policy
+                    owner:
+                      type: string
+                      format: email
+                      description: Email address of the policy owner
+                    augment_policy_uris:
+                      type: array
+                      items:
                         type: string
-                        description: name of authority
-                      language:
+                        format: uri
+                      description: URIs for the policies this policy augments
+                    aut:
+                      type: string
+                      format: uri
+                      description: Authority (AUT) URL
+                    auth_languages:
+                      type: array
+                      description: Names of the authority and the language the name is in
+                      items:
+                        type: object
+                        properties:
+                          auth_name:
+                            type: string
+                            description: Name of the authority
+                          language:
+                            type: string
+                            description: Language code (e.g., fr_FR)
+                    contacts:
+                      type: array
+                      description: Contact emails
+                      items:
+                        type: object
+                        properties:
+                          email:
+                            type: string
+                            format: email
+                          type:
+                            type: string
+                            description: Type of contact (e.g., standard, security or privacy)
+                    descriptions:
+                      type: array
+                      description: Descriptions of the policy and the language the description is in
+                      items:
+                        type: object
+                        properties:
+                          description:
+                            type: string
+                          language:
+                            type: string
+                    id:
+                      type: string
+                      format: uri
+                      description: Unique policy identifier (URI)
+                    includes_policy_uris:
+                      type: array
+                      items:
                         type: string
-                        description: Language code (e.g. fr_FR)
-                contacts:
-                  type: array
-                  description: Contact emails
-                  items:
-                    type: object
-                    properties:
-                      email:
-                        type: string
-                        format: email
-                      type:
-                        type: string
-                        description: Type of contact (e.g., standard, security or privacy)
-                descriptions:
-                  type: array
-                  description: Descriptions of the policy and the language the description is in.
-                  items:
-                    type: object
-                    properties:
-                      description:
-                        type: string
-                        description: description of the policy
-                      language:
-                        type: string
-                        description: Language code (e.g. fr_FR)
-                id:
-                  type: string
-                  format: uri
-                  description: Unique policy identifier (URI)
-                includes_policy_uris:
-                  type: array
-                  items:
-                    type: string
-                    format: uri
-                  description: URI's that this policy implicitly includes
-                notice_refresh_period:
-                  type: integer
-                  description: Number of seconds after which the policy needs to be presented to the user again.
-                policy_class:
-                  type: string
-                  description: Classification of the policy (e.g., sla, purpose, acceptable-use, conditions or privacy)
-                policy_jurisdiction:
-                  type: string
-                  nullable: true
-                  description: Jurisdiction value, though only for privacy class.
-                policy_url:
-                  type: string
-                  format: uri
-                  description: URL of the policy document
-                ttl:
-                  type: integer
-                  description: Time period after which this document should be retrieved again. 
-                valid_from:
-                  type: string
-                  format: date-time
-                  description: Datetime from which the policy is valid
+                        format: uri
+                    notice_refresh_period:
+                      type: integer
+                    policy_class:
+                      type: string
+                    policy_jurisdiction:
+                      type: string
+                      nullable: true
+                    policy_url:
+                      type: string
+                      format: uri
+                    ttl:
+                      type: integer
+                    valid_from:
+                      type: string
+                      format: date-time
+                  required:
+                    - name
+                    - owner
+                    - auth_languages
+                    - contacts
+                    - id
+                    - policy_class
               required:
-                - name
-                - owner
-                - auth_languages
-                - contacts
-                - id
-                - policy_class
-              example:
+                - policy_entry
+                - policy
+            example:
+              policy_entry:
+                name: "Global Science"
+                owner: "Esteban.Ocon@Haas.com"
+              policy:
                 name: "Global Science"
                 owner: "Esteban.Ocon@Haas.com"
                 augment_policy_uris:
                   - "https://researchhub.org/document/8742"
                 aut: "https://global-science.org"
                 auth_languages:
-                  - aut_name: "GlobalScience"
-                    language: "us_US"
-                  - aut_name: "GlobalScience"
+                  - auth_name: "GlobalScience"
+                    language: "en_US"
+                  - auth_name: "GlobalScience"
                     language: "fr_FR"
                 contacts:
                   - email: "info@global-science.org"
@@ -189,7 +205,7 @@ paths:
                     type: "security"
                 descriptions:
                   - description: "A collaborative international research organization."
-                    language: "us_US"
+                    language: "en_US"
                   - description: "Une organisation de recherche internationale collaborative."
                     language: "fr_FR"
                 id: "https://global-science.org/policy"

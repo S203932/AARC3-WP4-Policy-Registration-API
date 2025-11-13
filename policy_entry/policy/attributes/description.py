@@ -24,12 +24,13 @@ class Description:
                     f"The description language is not in accordance with rfc4646: {language}"
                 )
 
-            lower, upper = match.groups()
-            if upper.lower() != lower:
-                raise ValueError(
-                    f"Upper and lower case letters in description language does not match:{language}"
-                )
 
     @classmethod
     def from_dict(cls, data: dict):
         return cls(description=data.get("description"), language=data.get("language"))
+
+    def to_dict(self):
+        if self.language == "stand":
+            return {f'description': self.description}
+        else:
+            return {f"description#{self.language}": self.description}

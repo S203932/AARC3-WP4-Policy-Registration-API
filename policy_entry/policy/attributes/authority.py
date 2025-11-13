@@ -23,20 +23,19 @@ class AuthorityNames:
                     f"The description language is not in accordance with rfc4646: {language}"
                 )
 
-            lower, upper = match.groups()
-            if upper.lower() != lower:
-                raise ValueError(
-                    f"Upper and lower case letters in description language does not match:{language}"
-                )
-
 
     @classmethod
     def from_dict(cls, data: dict):
         return cls(
-            aut_name=data.get("aut_name"),
+            aut_name=data.get("auth_name"),
             language=data.get("language")
         )
-
+    
+    def to_dict(self):
+        if self.language == "stand":
+            return {f'aut_name': self.aut_name}
+        else:
+            return {f"aut_name#{self.language}": self.aut_name}
 
 
 
@@ -51,6 +50,17 @@ class Authority:
         names_data = data.get("names", [])
         names = [AuthorityNames.from_dict(n) for n in names_data]
         return cls(names=names, aut=data.get("aut"))
+
+    def to_dict(self):
+        # Flatten authority names directly
+        flattened_names = {}
+        for name in self.names:
+            flattened_names.update(name.to_dict())
+
+        return {
+            "aut": self.aut,
+            **flattened_names
+        }
 
 
 

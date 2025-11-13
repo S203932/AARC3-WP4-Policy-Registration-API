@@ -5,3 +5,24 @@ AARC3-WP4-Policy-Registration-API is free software: you can redistribute it and/
 AARC3-WP4-Policy-Registration-API is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with AARC3-WP4-Policy-Registration-API. If not, see <https://www.gnu.org/licenses/>.
 """
+import re
+
+class PolicyEntry:
+    def __init__(self, name:str, owner:str):
+        self.validateEmail(owner)
+        self.owner = owner
+        self.name = name
+
+    def validateEmail(self, email):
+        """Veryfying the email. Simple validation, not in depth"""
+        regex = r"[^@]+@[^@]+\.[^@]+"
+        if not re.match(regex, email):
+            raise ValueError(f"The email: {email}, is not a valid email for a contact")
+
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(
+            name=data.get("name"),
+            owner=data.get("owner")
+        )

@@ -11,8 +11,15 @@ from policy_entry.policy.attributes.authority import Authority, AuthorityNames
 from policy_entry.policy.attributes.contact import Contact
 from policy_entry.policy.attributes.description import Description
 
+from datetime import datetime, timezone
 from enum import Enum
 from typing import List
+
+from util import get_logger
+
+# Logging
+logger = get_logger(__name__)
+
 
 class PolicyTypes(Enum):
     PURPOSE = "purpose"
@@ -26,8 +33,6 @@ class PolicyTypes(Enum):
 class Policy:
     def __init__(
         self,
-        name: str,
-        owner: str,
         policyId: str,
         policy_class: str,
         authority: Authority,
@@ -43,8 +48,6 @@ class Policy:
     ):
         self.validatePolicyClass(policy_class)
         self.validatePolicyJurisdiction(policy_jurisdiction, policy_class)
-        self.name = name
-        self.owner = owner
         self.policyId = policyId
         self.policy_class = policy_class
         self.authority = authority
@@ -63,7 +66,11 @@ class Policy:
             raise ValueError(f'Not a valid policy class type:{policy_class}')
         
     def validatePolicyJurisdiction(self,policy_jurisdiction:str, policy_class:str):
-        if policy_jurisdiction is not None and policy_class is not PolicyTypes.PRIVACY:
+        logger.info(f'PolicyClass: {policy_class}, jurisdiction: {policy_jurisdiction}, statement: {policy_class is not PolicyTypes.PRIVACY.name.lower()}')
+        logger.info(f'PolicyTypes.Privacy.name: {PolicyTypes.PRIVACY.name}')
+        logger.info(f'PolicyTypes.Privacy: {PolicyTypes.PRIVACY}')
+        logger.info(f'PolicyTypes.Privacy.name: {PolicyTypes.PRIVACY.name.lower()}')
+        if policy_jurisdiction is not None and policy_class != PolicyTypes.PRIVACY.name.lower():
             raise ValueError(f'Jurisdiction is only valid with Privacy policy not: {policy_class}')
 
 
@@ -88,8 +95,6 @@ class Policy:
         descriptions = [Description.from_dict(d) for d in descriptions_data]
 
         return cls(
-            name=data["name"],
-            owner=data["owner"],
             policyId=data["id"],
             policy_class=data["policy_class"],
             authority=authority,
@@ -109,6 +114,40 @@ class Policy:
         """Deserialize a JSON string into a Policy object"""
         data = json.loads(json_str)
         return cls.from_dict(data)
+
+    def to_dict(self) -> dict:
+        """Serialize the Policy object into a dictionary"""
+
+        # Flatten descriptions
+        flattened_descriptions = {}
+        if self.descriptions:
+            for d in self.descriptions:
+                flattened_descriptions.update(d.to_dict())
+
+
+        return {
+            "id": self.policyId,
+            "policy_class": self.policy_class,
+            "aut": self.authority.aut if self.authority else None,
+            **(self.authority.to_dict() if self.authority else None),
+            "contacts": [c.to_dict() for c in self.contacts] if self.contacts else None,
+            "valid_from": (
+                self.valid_from.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                if isinstance(self.valid_from, datetime)
+                else self.valid_from
+            ),
+            "policy_url": self.policy_url,
+            "augment_policy_uris": self.augment_policy_uris or None,
+            "includes_policy_uris": self.implicit_policy_uris or None,
+            **flattened_descriptions,
+            "notice_refresh_period": self.notice_refresh_period,
+            "ttl": self.ttl,
+            "policy_jurisdiction": self.policy_jurisdiction,
+        }
+
+    def to_json(self, indent: int = 2) -> str:
+        """Serialize the Policy object into a JSON string"""
+        return json.dumps(self.to_dict(), indent=indent)
 
 
 

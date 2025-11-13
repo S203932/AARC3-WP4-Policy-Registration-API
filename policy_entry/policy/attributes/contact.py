@@ -42,3 +42,6 @@ class Contact:
             contact_type=data.get("type"),
             email=data.get("email")
         )
+    
+    def to_dict(self):
+        return{"email": self.email, "type": self.contact_type}
