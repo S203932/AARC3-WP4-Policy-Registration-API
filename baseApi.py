@@ -24,7 +24,6 @@ from policy_entry.policy.policy import Policy
 from policy_entry.policyEntry import PolicyEntry
 
 from flask import jsonify, request, Response
-from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Logging
 logger = get_logger(__name__)
@@ -41,7 +40,6 @@ tokenValidator = CustomIntrospectTokenValidator()
 
 def home():
     """Landing page"""
-    logger.info("Someone accessed the landing page")
     return Response(
         "Hi, this is just a landing page", status=200, mimetype="text/plain"
     )
@@ -49,19 +47,16 @@ def home():
 
 def getPolicies():
     """List all policy entries"""
-    logger.info("A call to getPolicies was made")
     conn = connection_pool.get_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT id,name,informational_url FROM policy_entries")
     response = cursor.fetchall()
     conn.close()
-    logger.info("The call to getPolicies was succesfull")
     return jsonify({"policies": response}), 200
 
 
 def getPolicy(policy: str):
     """Retrieve all information regarding a single policy"""
-    logger.info(f"A call to the getPolicy was made with policy:{policy}")
     if policyValidation(policy):
 
         conn = connection_pool.get_connection()
@@ -121,7 +116,6 @@ def getPolicy(policy: str):
         )
         response = cursor.fetchone()
 
-        logger.info(f'Response: {response}')
         conn.close()
         if response is None:
             return jsonify({"Not a policy id in db": policy}), 404
@@ -144,11 +138,12 @@ def getPolicy(policy: str):
                 response["description_languages"]
             )
 
+        # Converting to object from JSON
         policyObject = Policy.from_dict(response)
+
+        # Converting to dict from object
         policyDict = policyObject.to_dict()
 
-
-        logger.info(f"The call to getPolicy was succesful:{policyDict}")
         return jsonify({"policy": policyDict}), 200
     else:
         return jsonify({"Not a valid policy": policy}), 400
@@ -157,21 +152,23 @@ def getPolicy(policy: str):
 def addPolicy():
     """Add a new policy (requires OAuth2 token with scope openid for now)"""
     data = request.get_json()
-    logger.info(f"Received data: {data}")
 
+    # Extracting policy and policy_entry 
     policy_raw = data["policy"]
     policyEntry_raw = data["policy_entry"]
 
+    # Converting to policy and policy_entry objects
     policy = Policy.from_dict(policy_raw)
     policyEntry = PolicyEntry.from_dict(policyEntry_raw)
 
+    # Inserting the values from the objects into the DB
     insertPolicy(policy, policyEntry)
-
 
     return jsonify({"Success": "True", "received": data}), 200
 
 
 def policyValidation(policy: str):
+    """Validator of policyId's. Allowing only certain types of URI's """
     validator = (
         validators.Validator()
         .allow_schemes("http", "https", "urn")
@@ -193,9 +190,7 @@ def introspectToken(token, required_scopes=None, request=None):
     Returns a dictionary with token info if valid, returns Unauthorized or Forbidden if invalid
     """
     try:
-        logger.info(f"Token:{token}")
         info = tokenValidator.introspect_token(token)
-        logger.info(f"Token info:{info}")
 
         if not tokenValidator.validate_aud(info):
             raise Forbidden("Wrong audiance")
@@ -217,6 +212,7 @@ def introspectToken(token, required_scopes=None, request=None):
         raise
     
 def sql_value(value):
+    """Converting from possible None to Null to comply with sql. """
     if value is None:
         return "NULL"
     if isinstance(value, str):
@@ -224,9 +220,9 @@ def sql_value(value):
     return value
 
 def insertPolicy(policy:Policy, policyEntry: PolicyEntry):
+    """ Inserting the values from the Policy and PolicyEntry object into the DB"""
+    logger.info(f'Inserting new Policy:{policy.policyId}')
 
-    
-    logger.info(f'aut: {policy.authority.aut}')
     authority = f'INSERT INTO authorities(uri) VALUES ("{policy.authority.aut}") '
     authorityId = f'SELECT auth_id FROM authorities WHERE uri = "{policy.authority.aut}"'
 
@@ -247,8 +243,6 @@ def insertPolicy(policy:Policy, policyEntry: PolicyEntry):
     cursor.execute(authorityId)
     auth_id = cursor.fetchone()
 
-    logger.info(f'Managed to get auth_id: {auth_id}')
-    logger.info(f'The type: {type(auth_id)}')
 
     # Inserting authority names
     for auth in policy.authority.names:
