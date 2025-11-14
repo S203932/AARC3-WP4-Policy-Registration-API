@@ -32,8 +32,8 @@ Lastly, one needs to provide the following information about the IDP used for au
 - `IDP_TOKEN_ENDPOINT=https://somewhere.org/openid-connect/token`
 - `IDP_INTROSPECTION_ENDPOINT=https://somewhere.org/openid-connect/token/introspect`
 - `CLAIM_PATH=path_to_the_claim_in_token`
-- `IDP_ID = client_id_for_idp`
-- `IDP_SECRET = client_secret_for_idp`
+- `IDP_ID=client_id_for_idp`
+- `IDP_SECRET=client_secret_for_idp`
 
 Given that one has an external service to provide the tokens one can resort to only provide dummy values for the following environment variables:
 - `IDP_AUTHORIZATION_ENDPOINT`
@@ -47,7 +47,7 @@ These are the following ways to run the API.
 
 ## Docker compose
 - One can use docker compose given that one populates the `.env` first with the database, API and IDP information. 
-- Alternatively, one can provide the db information at runtime.
+- Alternatively, one can provide the DB information at runtime.
 For using docker compose, one can provide the following database and API information:
 - `DB_HOST=mysql-db`
 - `DB_USER=testuser`
@@ -58,7 +58,7 @@ For using docker compose, one can provide the following database and API informa
 - `APP_BASE=localhost:8080`
 One would still need to provide the previously mentioned IDP information. 
 
-# Api Endpoints
+# API Endpoints
 The following are the available endpoints of the API. 
 
 ## /getPolicies
@@ -109,7 +109,7 @@ The following is an example of policies returned from the given endpoint.
 
 ## /getPolicy/\<URI\>
 The endpoint `/getPolicy/<URI>` lists the information stored related to the requested URI.
-One can only use a `GET` operation at this endpoint and most provide a valid URI. A valid URI is deemed to have the scheme `https`,`http` or `urn`.
+One can only use a `GET` operation at this endpoint and must provide a valid URI. A valid URI is deemed to have the scheme `https`,`http` or `urn`.
 If one does not provide a valid URI one would be presented with an error message stating the policy provided is invalid.
 
 In the following example the URI presented was `operations-portal.egi.eu%2Fvo%2Fview%2Fvoname%2Fxenon.biggrid.nl` (notice the missing scheme).
@@ -126,7 +126,7 @@ If one provides a valid URI, but it is not a known one, then the following would
 ```
 
 Given that one has made a valid call to the endpoint the following information to the policy can be presented in JSON format.
-- augment_policy_uris - list of policy URI's that are augmented by this policy
+- augment_policy_uris - list of policy URIs that are augmented by this policy
 - aut - URI identifying the authority governing this policy
 - aut_name - name of the authority, might contain a "#" to show the language code. Possible of multiple aut-name versions due to language difference
 - contacts - a list of contact information holding the following values. If no contacts, then it's null
@@ -134,7 +134,7 @@ Given that one has made a valid call to the endpoint the following information t
     - email - email of the contact
 - description - a short description of the policy, might contain a "#" to show the language code. Possible of multiple description versions due to language difference
 - id - string containing the URI of the identifier for the policy
-- includes_policy_uris - list of policy URI's that are included in this policy and therefore implicitly fulfilled.
+- includes_policy_uris - list of policy URIs that are included in this policy and therefore implicitly fulfilled.
 - notice_refresh_period - number of seconds after which this same notice has to be presented again to the same user
 - policy_class - string from the limitative enumeration (‘purpose’, ‘acceptable-use’, ‘conditions’, ’sla’, ’privacy’). It may include a "#" to indicate jurisdiction, though only for policy_class type "privacy".
 - policy_url - URL of the documentation of conditions and policies
@@ -183,13 +183,13 @@ The following is an example of the response from a valid call to the endpoint.
 
 ## /
 The endpoint `/` is the landing page. One can only use the `GET` operation and the endpoint is mainly a way to confirm that the instance is running. 
-If working it should return "Hi, this is just a landing page". This also confirms that API's database connection was successfull. 
+If working it should return "Hi, this is just a landing page". This also confirms that API's database connection was successful. 
 
 
 ## /addPolicy
 The endpoint is to add a policy to the policy registry. 
 This is to be limited to users with clearance, hence the need for authentication. 
-It supports only the `POST` operation and requires a valid token from the IDP containing the openid claim and the claim defined in the environment variables (`CLAIM_PATH=path_to_the_claim_in_token`). 
+It supports only the `POST` operation and requires a valid token from the IDP containing the _openid_ claim and the claim defined in the environment variables (`CLAIM_PATH=path_to_the_claim_in_token`). 
 
 To add the policy one should provide it as a JSON object within the data of the `POST` request. 
 The JSON should have the following structure: 
@@ -217,7 +217,7 @@ An example of the `policy_entry` JSON object could be the following:
 
 The `policy` JSON object is similar to the `policy` object defined previously. 
 There are a few changes though such as the authority names should be provided as a list with the parent object being `auth_languages`.
-Within the list, two fields needs to be provided for each item; `auth_name` and `language`. The `language` needs to be in accordance with [rfc4646](https://datatracker.ietf.org/doc/html/rfc4646).
+Within the list, two fields need to be provided for each item; `auth_name` and `language`. The `language` needs to be in accordance with [rfc4646](https://datatracker.ietf.org/doc/html/rfc4646).
 
 An example of this could be:
 ```json
@@ -246,7 +246,7 @@ This is similar for descriptions, as shown from the following example:
     ]
 ```
 
-Lastly, it needs to be mentioned that the optional `jurisdiction` to the `policy_class` is a seperate field that can be provided:
+Lastly, it needs to be mentioned that the optional `jurisdiction` to the `policy_class` is a separate field that can be provided:
 ```
 "policy": {
   ...
@@ -336,7 +336,7 @@ However, it must be mentioned that using the swagger ui with the authorization c
 
 ### Example of method
 Below one can see an example of the information provided and available within the swagger ui when calling an endpoint. 
-For the different endpoints are example data available (if needed) and curl examples should one want to use a terminal instead.
+There is example data available (if needed) at the different endpoints along with curl examples should one want to use a terminal instead.
 
 #### /
 ![Alt text](images/swagger_ui_landing.jpg?raw=true "Title")
