@@ -66,10 +66,6 @@ class Policy:
             raise ValueError(f'Not a valid policy class type:{policy_class}')
         
     def validatePolicyJurisdiction(self,policy_jurisdiction:str, policy_class:str):
-        logger.info(f'PolicyClass: {policy_class}, jurisdiction: {policy_jurisdiction}, statement: {policy_class is not PolicyTypes.PRIVACY.name.lower()}')
-        logger.info(f'PolicyTypes.Privacy.name: {PolicyTypes.PRIVACY.name}')
-        logger.info(f'PolicyTypes.Privacy: {PolicyTypes.PRIVACY}')
-        logger.info(f'PolicyTypes.Privacy.name: {PolicyTypes.PRIVACY.name.lower()}')
         if policy_jurisdiction is not None and policy_class != PolicyTypes.PRIVACY.name.lower():
             raise ValueError(f'Jurisdiction is only valid with Privacy policy not: {policy_class}')
 
