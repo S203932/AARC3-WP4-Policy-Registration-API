@@ -28,17 +28,16 @@ Furthermore, one needs to provide the following information about where the api 
 - `APP_BASE=base_link_for_the_api_without_scheme`
 
 Lastly, one needs to provide the following information about the IDP used for authentication to add a policy to the registry:
-
-- IDP_AUTHORIZATION_ENDPOINT=https://somewhere.org/openid-connect/auth
-- IDP_TOKEN_ENDPOINT=https://somewhere.org/openid-connect/token
-- IDP_INTROSPECTION_ENDPOINT=https://somewhere.org/openid-connect/token/introspect
-- CLAIM_PATH=path_to_the_claim_in_token
-- IDP_ID = client_id_for_idp
-- IDP_SECRET = client_secret_for_idp
+- `IDP_AUTHORIZATION_ENDPOINT=https://somewhere.org/openid-connect/auth`
+- `IDP_TOKEN_ENDPOINT=https://somewhere.org/openid-connect/token`
+- `IDP_INTROSPECTION_ENDPOINT=https://somewhere.org/openid-connect/token/introspect`
+- `CLAIM_PATH=path_to_the_claim_in_token`
+- `IDP_ID = client_id_for_idp`
+- `IDP_SECRET = client_secret_for_idp`
 
 Given that one has an external service to provide the tokens one can resort to only provide dummy values for the following environment variables:
-- IDP_AUTHORIZATION_ENDPOINT
-- IDP_TOKEN_ENDPOINT
+- `IDP_AUTHORIZATION_ENDPOINT`
+- `IDP_TOKEN_ENDPOINT`
 
 These are the following ways to run the api.
 
@@ -50,13 +49,13 @@ These are the following ways to run the api.
 - One can use docker compose given that one populates the `.env` first with the database, api and IDP information. 
 - Alternatively, one provide the db information at runtime.
 For using docker compose, one can provide the following database and api information:
-- DB_HOST=mysql-db
-- DB_USER=testuser
-- DB_PASSWORD=testpass
-- DB_PORT=3306
-- DB_NAME=testdb
-- APP_URL=http://127.0.0.1:8080
-- APP_BASE=localhost:8080
+- `DB_HOST=mysql-db`
+- `DB_USER=testuser`
+- `DB_PASSWORD=testpass`
+- `DB_PORT=3306`
+- `DB_NAME=testdb`
+- `APP_URL=http://127.0.0.1:8080`
+- `APP_BASE=localhost:8080`
 One would still need to provide the previously mentioned IDP information. 
 
 # Api Endpoints
@@ -111,13 +110,15 @@ The following is an example of policies returned from the given endpoint.
 ## /getPolicy/\<uri\>
 The endpoint `/getPolicy/<uri>` lists the information stored related to the requested uri.
 One can only use a `GET` operation at this endpoint and most provide a valid uri. A valid uri is deemed to have the scheme `https`,`http` or `urn`.
-If one does not provide a valid uri, in this example the uri presented was `operations-portal.egi.eu%2Fvo%2Fview%2Fvoname%2Fxenon.biggrid.nl` (notice the missing scheme),then the follwing message will be displayed.
+If one does not provide a valid uri one would be presented with an error message stating the policy provided is invalid.
+
+In the following example the uri presented was `operations-portal.egi.eu%2Fvo%2Fview%2Fvoname%2Fxenon.biggrid.nl` (notice the missing scheme).
 ```json
 {
   "Not a valid policy": "operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl"
 }
 ```
-If one provides a valid uuid, but it is not a known one, then the following could be presented"
+If one provides a valid uri, but it is not a known one, then the following could be presented"
 ```json
 {
   "Not a policy id in db": "https://unknown.com"
@@ -126,7 +127,7 @@ If one provides a valid uuid, but it is not a known one, then the following coul
 
 Given that one has made a valid call to the endpoint the following information to the policy can be presented in json format.
 - augment_policy_uris - list of policy uri's that are augmented by this policy
-- aut - URI identifying the authority governing this policy
+- aut - uri identifying the authority governing this policy
 - aut_name - name of the authority, might contain a "#" to show the language code. Possible of multiple aut-name versions due to language difference
 - contacts - a list of contact information holding the following values. If no contacts, then it's null
     - type - either `standard`, `security` or `privacy`
@@ -140,7 +141,7 @@ Given that one has made a valid call to the endpoint the following information t
 - ttl - the time period (in seconds) after which this document should be retrieved again by consumers
 - valid_from - time from which this policy is in effect
 
-The following is an example of a valid call to the endpoint. 
+The following is an example of the response from a valid call to the endpoint. 
 ```json
 {
   "policy": {
@@ -172,8 +173,7 @@ The following is an example of a valid call to the endpoint.
       "urn:idk:123456"
     ],
     "notice_refresh_period": 41212301,
-    "policy_class": "privacy",
-    "policy_jurisdiction": "eu",
+    "policy_class": "privacy#eu",
     "policy_url": "https://some-community.org",
     "ttl": 21817600,
     "valid_from": "2025-10-17T09:00:00Z"
@@ -186,38 +186,38 @@ The endpoint `/` is the landing page. One can only use the `GET` operation and t
 If working it should return "Hi, this is just a landing page". This also confirms that api's database connection was successfull. 
 
 
-## /addPolicy/>
+## /addPolicy
 The endpoint is to add a policy to the policy registry. 
 This is to be limited to users with clearance, hence the need for authentication. 
 It supports only the `POST` operation and requires a valid token from the IDP containing the openid claim and the claim defined in the environment variables (`CLAIM_PATH=path_to_the_claim_in_token`). 
 
 To add the policy one should provide it as a json object within the data of the `POST` request. 
 The JSON should have the following structure: 
-```json
+```
 {
   "policy_entry": {
-   ...
+     ...
   },
   "policy": {
-    ...
+      ...
   }
 }
 ```
 The `policy_entry` json object needs to contain the following fields:
 - name - a standard human readable name of the policy
-- owner - the owner of the given policy, who is responsible for it
+- owner - the owner of the given policy, who is responsible for it, preferably an email
 
 An example of the `policy_entry` json object could be the following:
 ```json
-policy_entry": {
+"policy_entry": {
     "name": "Global Science",
     "owner": "Esteban.Ocon@Haas.com"
-  }
+}
 ```
 
 The `policy` json object is similar to the `policy` object defined previously. 
-There are a few changes though such as the authority names should be provided as a list with the parant object being `auth_languages`.
-Within the list two fields needs to be provided; `auth_name` and `language`. The language needs to be in accordance with [rfc4646](https://datatracker.ietf.org/doc/html/rfc4646).
+There are a few changes though such as the authority names should be provided as a list with the parent object being `auth_languages`.
+Within the list two fields needs to be provided for each item; `auth_name` and `language`. The `language` needs to be in accordance with [rfc4646](https://datatracker.ietf.org/doc/html/rfc4646).
 
 An example of this could be:
 ```json
@@ -230,6 +230,7 @@ An example of this could be:
         "auth_name": "GlobalScience",
         "language": "fr_FR"
       }
+]
 ```
 This is similar for descriptions, as shown from the following example:
 ```json
@@ -246,10 +247,12 @@ This is similar for descriptions, as shown from the following example:
 ```
 
 Lastly, it needs to be mentioned that the optional `jurisdiction` to the `policy_class` is a seperate field that can be provided:
-```json
-...
-"policy_jurisdiction": "EU"
-...
+```
+"policy": {
+  ...
+  "policy_jurisdiction": "EU",
+  ...
+}
 ```
 
 
