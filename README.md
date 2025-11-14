@@ -10,7 +10,7 @@ This is a base implementation of a policy registry API in accordance with AARC-G
 
 ## Structure of the required database
 The database that will be created when running the api will have the following structure. 
-![Alt text](API_DB_class.jpg?raw=true "Title")
+![Alt text](images/API_DB_class.jpg?raw=true "Title")
 
 Within the api is an initialization script of the database that will create the above mentioned tables and populate them with some dummy data. 
 
@@ -316,10 +316,15 @@ The following is an example of a valid json object for the `/addPolicy` endpoint
 
 ## /ui
 This endpoint is the swagger ui. 
+
+![Alt text](images/swagger_ui.jpg?raw=true "Title")
+
 From here one is able to call the other endpoints endpoints of the api using the ui.
 Furthermore, it enables the user to obtain the needed tokens for the `/addPolicy` endpoint using the implicit flow via the registered IDP. 
 To obtain a token using the implicit flow one needs to provide the client id registered with the IDP. 
 Bear in mind that the authorization code flow is enabled, but is not advisable as having the client secret in the front-end isn't deemed safe.
+![Alt text](images/swagger_ui_login.jpg?raw=true "Title")
 
-For the different endpoints are small descriptive texts along with 
 
+For the endpoints `/getPolicy` and `/addPolicy` are some default values to help with utilizing them. 
+![Alt text](images/swagger_ui_add.jpg?raw=true "Title")

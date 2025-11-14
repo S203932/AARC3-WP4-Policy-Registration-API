@@ -54,6 +54,7 @@ paths:
           schema:
             type: string
             format: path
+            example: "https://some-community.org"
       responses:
         "200":
           description: Detailed policy
