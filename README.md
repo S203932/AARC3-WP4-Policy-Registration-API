@@ -316,15 +316,31 @@ The following is an example of a valid json object for the `/addPolicy` endpoint
 
 ## /ui
 This endpoint is the swagger ui. 
+The swagger ui interface has been added to make it easier to navigate the endpoints and provides example values and calls to the various endpoints. 
+
+### Main page
+From here one is able to call the other endpoints endpoints of the api using the ui.
 
 ![Alt text](images/swagger_ui.jpg?raw=true "Title")
 
-From here one is able to call the other endpoints endpoints of the api using the ui.
-Furthermore, it enables the user to obtain the needed tokens for the `/addPolicy` endpoint using the implicit flow via the registered IDP. 
-To obtain a token using the implicit flow one needs to provide the client id registered with the IDP. 
-Bear in mind that the authorization code flow is enabled, but is not advisable as having the client secret in the front-end isn't deemed safe.
+### Login
+The login provides the option for users to obtain tokens. 
+Tokens are necessary for the `/addPolicy` endpoint.
+One can use an alternative method to obtain tokens as long as it is for the registered IDP and with the registered client. 
+There are two different flows enabled pr. default from the api
+- The implicit flow
+- The authorization code flow
+However, it must be mentioned that using the swagger ui with the authorization code flow is not advisable due to the fact that having the client secret in the front-end is not deemed safe. 
 ![Alt text](images/swagger_ui_login.jpg?raw=true "Title")
 
+### Example of method
+Below one can see an example of the information provided and available within the swagger ui when calling an endpoint. 
+For the different endpoints are example data available (if needed) and curl examples should one want to use a terminal instead.
 
-For the endpoints `/getPolicy` and `/addPolicy` are some default values to help with utilizing them. 
-![Alt text](images/swagger_ui_add.jpg?raw=true "Title")
+#### /
+![Alt text](images/swagger_ui_landing.jpg?raw=true "Title")
+
+
+#### /getPolicy
+![Alt text](images/swagger_ui_get_policy.jpg?raw=true "Title")
+
