@@ -124,10 +124,16 @@ class Policy:
             for d in self.descriptions:
                 flattened_descriptions.update(d.to_dict())
 
+        policy_class_value = (
+            f"{self.policy_class}#{self.policy_jurisdiction}"
+            if self.policy_jurisdiction
+            else self.policy_class
+        )
+
 
         return {
             "id": self.policyId,
-            "policy_class": self.policy_class,
+            "policy_class": policy_class_value,
             "aut": self.authority.aut if self.authority else None,
             **(self.authority.to_dict() if self.authority else None),
             "contacts": [c.to_dict() for c in self.contacts] if self.contacts else None,
@@ -142,7 +148,6 @@ class Policy:
             **flattened_descriptions,
             "notice_refresh_period": self.notice_refresh_period,
             "ttl": self.ttl,
-            "policy_jurisdiction": self.policy_jurisdiction,
         }
 
     def to_json(self, indent: int = 2) -> str:

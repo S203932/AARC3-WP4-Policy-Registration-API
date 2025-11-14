@@ -98,13 +98,6 @@ paths:
                   type: object
                   description: Full policy details
                   properties:
-                    name:
-                      type: string
-                      description: Name of the policy
-                    owner:
-                      type: string
-                      format: email
-                      description: Email address of the policy owner
                     augment_policy_uris:
                       type: array
                       items:
@@ -174,8 +167,6 @@ paths:
                       type: string
                       format: date-time
                   required:
-                    - name
-                    - owner
                     - auth_languages
                     - contacts
                     - id
@@ -188,8 +179,6 @@ paths:
                 name: "Global Science"
                 owner: "Esteban.Ocon@Haas.com"
               policy:
-                name: "Global Science"
-                owner: "Esteban.Ocon@Haas.com"
                 augment_policy_uris:
                   - "https://researchhub.org/document/8742"
                 aut: "https://global-science.org"
