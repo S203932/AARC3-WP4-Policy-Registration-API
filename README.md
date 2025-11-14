@@ -312,3 +312,14 @@ The following is an example of a valid json object for the `/addPolicy` endpoint
   }
 }
 ```
+
+
+## /ui
+This endpoint is the swagger ui. 
+From here one is able to call the other endpoints endpoints of the api using the ui.
+Furthermore, it enables the user to obtain the needed tokens for the `/addPolicy` endpoint using the implicit flow via the registered IDP. 
+To obtain a token using the implicit flow one needs to provide the client id registered with the IDP. 
+Bear in mind that the authorization code flow is enabled, but is not advisable as having the client secret in the front-end isn't deemed safe.
+
+For the different endpoints are small descriptive texts along with 
+
