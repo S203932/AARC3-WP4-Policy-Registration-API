@@ -330,6 +330,7 @@ One can use an alternative method to obtain tokens as long as it is for the regi
 There are two different flows enabled pr. default from the api
 - The implicit flow
 - The authorization code flow
+
 However, it must be mentioned that using the swagger ui with the authorization code flow is not advisable due to the fact that having the client secret in the front-end is not deemed safe. 
 ![Alt text](images/swagger_ui_login.jpg?raw=true "Title")
 
