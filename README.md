@@ -191,11 +191,121 @@ The endpoint is to add a policy to the policy registry.
 This is to be limited to users with clearance, hence the need for authentication. 
 It supports only the `POST` operation and requires a valid token from the IDP containing the openid claim and the claim defined in the environment variables (`CLAIM_PATH=path_to_the_claim_in_token`). 
 
-
-If one tries to access it with the `policy` called `somePolicy`, then it should return:
+To add the policy one should provide it as a json object within the data of the `POST` request. 
+The JSON should have the following structure: 
 ```json
 {
-  "data": "Attempt to add somePolicy"
+  "policy_entry": {
+   ...
+  },
+  "policy": {
+    ...
+  }
 }
 ```
-The endpoint does not prompt any interaction with the database, nor stores any information given. 
+The `policy_entry` json object needs to contain the following fields:
+- name - a standard human readable name of the policy
+- owner - the owner of the given policy, who is responsible for it
+
+An example of the `policy_entry` json object could be the following:
+```json
+policy_entry": {
+    "name": "Global Science",
+    "owner": "Esteban.Ocon@Haas.com"
+  }
+```
+
+The `policy` json object is similar to the `policy` object defined previously. 
+There are a few changes though such as the authority names should be provided as a list with the parant object being `auth_languages`.
+Within the list two fields needs to be provided; `auth_name` and `language`. The language needs to be in accordance with [rfc4646](https://datatracker.ietf.org/doc/html/rfc4646).
+
+An example of this could be:
+```json
+"auth_languages": [
+      {
+        "auth_name": "GlobalScience",
+        "language": "en_US"
+      },
+      {
+        "auth_name": "GlobalScience",
+        "language": "fr_FR"
+      }
+```
+This is similar for descriptions, as shown from the following example:
+```json
+    "descriptions": [
+      {
+        "description": "A collaborative international research organization.",
+        "language": "en_US"
+      },
+      {
+        "description": "Une organisation de recherche internationale collaborative.",
+        "language": "fr_FR"
+      }
+    ]
+```
+
+Lastly, it needs to be mentioned that the optional `jurisdiction` to the `policy_class` is a seperate field that can be provided:
+```json
+...
+"policy_jurisdiction": "EU"
+...
+```
+
+
+The following is an example of a valid json object for the `/addPolicy` endpoint.
+```json
+{
+  "policy_entry": {
+    "name": "Global Science",
+    "owner": "Esteban.Ocon@Haas.com"
+  },
+  "policy": {
+    "augment_policy_uris": [
+      "https://researchhub.org/document/8742"
+    ],
+    "aut": "https://global-science.org",
+    "auth_languages": [
+      {
+        "auth_name": "GlobalScience",
+        "language": "en_US"
+      },
+      {
+        "auth_name": "GlobalScience",
+        "language": "fr_FR"
+      }
+    ],
+    "contacts": [
+      {
+        "email": "info@global-science.org",
+        "type": "standard"
+      },
+      {
+        "email": "support@global-science.org",
+        "type": "security"
+      }
+    ],
+    "descriptions": [
+      {
+        "description": "A collaborative international research organization.",
+        "language": "en_US"
+      },
+      {
+        "description": "Une organisation de recherche internationale collaborative.",
+        "language": "fr_FR"
+      }
+    ],
+    "id": "https://global-science.org/policy",
+    "includes_policy_uris": [
+      "https://partners.org/policies/v3/",
+      "https://open-data.net/policies/aup/v2/"
+    ],
+    "notice_refresh_period": 2592000,
+    "policy_class": "sla",
+    "policy_jurisdiction": null,
+    "policy_url": "https://global-science.org/policy",
+    "ttl": 47304000,
+    "valid_from": "2025-04-21 14:00:00"
+  }
+}
+```
