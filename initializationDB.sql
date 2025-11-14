@@ -191,7 +191,7 @@ INSERT INTO descriptions(id,description, language)
 VALUES ('urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815','This Acceptable Use Policy governs the use of the Nikhef networking and computer services; all users of these services are expected to understand and comply to these rules.','stand'),
 ('https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl','detector construction and experiment analysis for the search of dark matter using Xenon detectors','stand'),
 ('urn:doi:10.60953/68611c23-ccc7-4199-96fe-74a7e6021815','Deze Gebruiksvoorwaarden betreffen het gebruik van netwerk en computers bij Nikhef. Iedere gebruiker van deze middelen of diensten wordt geacht op hoogte te zijn van deze voorwaarden en deze na te leven.','nl_NL'),
-('https://some-community.org','A community somwhere researching for the betterment of mankind (hopefully)', 'stand'),
+('https://some-community.org','A community somewhere researching for the betterment of mankind (hopefully)', 'stand'),
 ('https://some-community.org','Et samarbejde et eller andet sted som forsker til fordel for menneskeheden (forhaabentlig)','dk_DK'),
 ('https://another-community.org','A research community beyond suspicion.','stand'),
 ('https://another-community.org','Et trovaerdigt forsknings institut.','dk_DK')
