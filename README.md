@@ -126,7 +126,7 @@ If one provides a valid URI, but it is not a known one, then the following would
 ```
 
 Given that one has made a valid call to the endpoint the following information to the policy can be presented in JSON format.
-- augment_policy_uris - list of policy URIs that are augmented by this policy
+- augments_policy_uris - list of policy URIs that are augmented by this policy
 - aut - URI identifying the authority governing this policy
 - aut_name - name of the authority, might contain a "#" to show the language code. Possible of multiple aut-name versions due to language difference
 - contacts - a list of contact information holding the following values. If no contacts, then it's null
@@ -145,7 +145,7 @@ The following is an example of the response from a valid call to the endpoint.
 ```json
 {
   "policy": {
-    "augment_policy_uris": [
+    "augments_policy_uris": [
       "https://operations-portal.egi.eu/vo/view/voname/xenon.biggrid.nl"
     ],
     "aut": "https://xenonexperiment.org/",
@@ -245,6 +245,9 @@ This is similar for descriptions, as shown from the following example:
       }
     ]
 ```
+
+Also, it should be mentioned that the field `augments_policy_uris` is renamed `augment_policy_uris`, when trying to add a policy.
+This has been noted, and should be fixed in a future release. 
 
 Lastly, it needs to be mentioned that the optional `jurisdiction` to the `policy_class` is a separate field that can be provided:
 ```
