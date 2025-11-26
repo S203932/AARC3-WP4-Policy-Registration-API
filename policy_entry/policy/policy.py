@@ -139,7 +139,7 @@ class Policy:
                 else self.valid_from
             ),
             "policy_url": self.policy_url,
-            "augment_policy_uris": self.augment_policy_uris or None,
+            "augments_policy_uris": self.augment_policy_uris or None,
             "includes_policy_uris": self.implicit_policy_uris or None,
             **flattened_descriptions,
             "notice_refresh_period": self.notice_refresh_period,
